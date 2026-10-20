@@ -3,16 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Browse through our collection of API endpoints. Find what you need or discover something new.">
-    <meta name="theme-color" content="#0a0f1b">
-    <title>Riyan Official API</title>
-    <link rel="icon" href="/src/icon.png" type="image/png">
+    <meta name="description" content="CHISA • API - Explore & test API endpoints.">
+    <meta name="theme-color" content="#060914">
+    <title>CHISA • API</title>
+    <link rel="icon" href="https://cdn.zass.in/5XAiLLQmn2.jpeg" type="image/jpeg">
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Ubuntu+Mono:ital,wght@0,400;0,700;1,400;1,700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Ubuntu+Mono:ital,wght@0,400;0,700&family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
     <script>
         tailwind.config = {
             darkMode: 'class',
@@ -20,239 +20,1106 @@
                 extend: {
                     fontFamily: {
                         'mono': ['Ubuntu Mono', 'monospace'],
-                        'sans': ['Inter', 'system-ui', 'sans-serif']
+                        'sans': ['Inter', 'system-ui', 'sans-serif'],
+                        'display': ['Space Grotesk', 'sans-serif']
                     },
-                    fontSize: {
-                        'xxs': ['0.65rem', { lineHeight: '0.9rem' }]
-                    }
+                    fontSize: { 'xxs': ['0.65rem', { lineHeight: '0.9rem' }] }
                 }
             }
         }
     </script>
-
     <style>
-        body {
-            background: #0a0f1b;
-            color: #e0e7ff;
-            font-family: 'Ubuntu Mono', monospace;
+        :root {
+            --bg-main:        #060914;
+            --bg-card:        #0d1425;
+            --bg-elevated:    #111a2e;
+            --accent-1:       #a855f7;
+            --accent-2:       #3b82f6;
+            --accent-3:       #22d3ee;
+            --accent-4:       #ec4899;
+            --text-main:      #f1f5ff;
+            --text-muted:     #94a3b8;
+            --text-dim:       #64748b;
+            --border-main:    rgba(148, 163, 184, 0.12);
+            --border-accent:  #3b82f6;
+            --status-online:  #22c55e;
+            --status-error:   #ef4444;
         }
+
+        * { -webkit-tap-highlight-color: transparent; }
+
+        body {
+            background: var(--bg-main);
+            color: var(--text-main);
+            font-family: 'Inter', system-ui, sans-serif;
+            overflow-x: hidden;
+            position: relative;
+            min-height: 100vh;
+        }
+
+        .bg-orbs {
+            position: fixed; inset: 0; z-index: 0;
+            pointer-events: none; overflow: hidden;
+        }
+        .orb {
+            position: absolute; border-radius: 50%;
+            filter: blur(80px); opacity: 0.35;
+            animation: float 20s ease-in-out infinite;
+        }
+        .orb-1 {
+            width: 400px; height: 400px;
+            background: var(--accent-1);
+            top: -100px; left: -100px;
+            animation-delay: 0s;
+        }
+        .orb-2 {
+            width: 500px; height: 500px;
+            background: var(--accent-2);
+            bottom: -150px; right: -150px;
+            animation-delay: -7s;
+        }
+        .orb-3 {
+            width: 300px; height: 300px;
+            background: var(--accent-4);
+            top: 40%; right: 20%;
+            animation-delay: -14s;
+            opacity: 0.2;
+        }
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            33%      { transform: translate(40px, -60px) scale(1.1); }
+            66%      { transform: translate(-50px, 40px) scale(0.95); }
+        }
+
+        .bg-grid {
+            position: fixed; inset: 0; z-index: 1;
+            pointer-events: none;
+            background-image:
+                linear-gradient(rgba(59, 130, 246, 0.04) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(59, 130, 246, 0.04) 1px, transparent 1px);
+            background-size: 40px 40px;
+            mask-image: radial-gradient(ellipse at center, black 30%, transparent 80%);
+            -webkit-mask-image: radial-gradient(ellipse at center, black 30%, transparent 80%);
+        }
+
+        main, #loadingScreen, nav { position: relative; z-index: 2; }
 
         .gradient-text {
-            background: linear-gradient(90deg, #a855f7, #3b82f6);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
+            background: linear-gradient(90deg, var(--accent-1), var(--accent-2), var(--accent-3), var(--accent-4));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            background-clip: text; background-size: 300% auto;
+            animation: shine 6s linear infinite;
+        }
+        @keyframes shine { to { background-position: 300% center; } }
+
+        .hero-banner {
+            position: relative; width: 100%; aspect-ratio: 16/9;
+            border-radius: 28px; overflow: hidden;
+            background: var(--bg-card);
+            margin-bottom: 24px;
+            box-shadow:
+                0 30px 60px -20px rgba(59, 130, 246, 0.4),
+                0 0 0 1px rgba(148, 163, 184, 0.1),
+                inset 0 1px 0 rgba(255, 255, 255, 0.05);
+            animation: fadeUp 0.8s ease;
+        }
+        .hero-banner::after {
+            content: '';
+            position: absolute; inset: 0;
+            border-radius: 28px;
+            padding: 1px;
+            background: linear-gradient(135deg, var(--accent-1), var(--accent-2), var(--accent-3));
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            pointer-events: none;
+            opacity: 0.6;
+        }
+        
+        .hero-banner img.hero-bg {
+            width: 100%; height: 100%; object-fit: cover; display: block;
+            filter: brightness(0.5) saturate(1.2);
+            transition: transform 8s ease;
+        }
+        .hero-banner:hover img.hero-bg { transform: scale(1.05); }
+        .hero-overlay {
+            position: absolute; inset: 0;
+            display: flex; align-items: center; justify-content: center;
+            background: radial-gradient(circle at center, rgba(6,9,20,0.2) 0%, rgba(6,9,20,0.75) 100%);
+            padding: 1rem;
+        }
+        .hero-gif {
+            max-width: 65%; max-height: 65%; object-fit: contain;
+            border-radius: 20px;
+            filter: drop-shadow(0 15px 35px rgba(59,130,246,0.8));
+            animation: gifFloat 4s ease-in-out infinite;
+        }
+        @keyframes gifFloat {
+            0%, 100% { transform: translateY(0); }
+            50%      { transform: translateY(-8px); }
+        }
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to   { opacity: 1; transform: translateY(0); }
         }
 
-        .response-media-container {
-            width: 100%;
-            aspect-ratio: 16/9;
-            border-radius: 12px;
+        .blink { animation: blink 2s infinite; }
+        @keyframes blink { 0%,100% { opacity: 1; } 50% { opacity: 0.5; } }
+
+        body::-webkit-scrollbar { width: 10px; }
+        body::-webkit-scrollbar-track { background: var(--bg-main); }
+        body::-webkit-scrollbar-thumb {
+            background: linear-gradient(var(--accent-1), var(--accent-2));
+            border-radius: 5px;
+            border: 2px solid var(--bg-main);
+        }
+
+        .navbar-custom {
+            background: rgba(6, 9, 20, 0.7);
+            backdrop-filter: blur(20px) saturate(180%);
+            -webkit-backdrop-filter: blur(20px) saturate(180%);
+            border-bottom: 1px solid var(--border-main);
+        }
+        .status-online {
+            background: rgba(34, 197, 94, 0.12);
+            color: var(--status-online);
+            border: 1px solid rgba(34, 197, 94, 0.25);
+        }
+
+        .btn-docs {
+            position: relative;
+            display: flex; align-items: center; justify-content: center; gap: 12px;
+            padding: 20px 28px;
+            border-radius: 18px;
+            font-size: 14px; font-weight: 800;
+            font-family: 'Space Grotesk', sans-serif;
+            background: linear-gradient(135deg, var(--accent-1), var(--accent-2));
+            color: white; border: none; cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            letter-spacing: 1.5px;
+            text-transform: uppercase; text-decoration: none;
+            margin: 24px 0 48px; width: 100%;
+            box-shadow:
+                0 20px 40px -12px rgba(59,130,246,0.6),
+                0 0 0 1px rgba(255, 255, 255, 0.1) inset;
             overflow: hidden;
-            background: #000814;
+            animation: fadeUp 1s ease;
+        }
+        .btn-docs::before {
+            content: '';
+            position: absolute; inset: 0;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            transform: translateX(-100%);
+            animation: shimmer 3s infinite;
+        }
+        .btn-docs::after {
+            content: '';
+            position: absolute; inset: -2px;
+            background: linear-gradient(135deg, var(--accent-1), var(--accent-2), var(--accent-3));
+            border-radius: 20px;
+            z-index: -1;
+            opacity: 0;
+            filter: blur(15px);
+            transition: opacity 0.4s ease;
+        }
+        @keyframes shimmer { to { transform: translateX(100%); } }
+        .btn-docs:hover {
+            transform: translateY(-4px) scale(1.015);
+            box-shadow: 0 28px 60px -12px rgba(59,130,246,0.8);
+        }
+        .btn-docs:hover::after { opacity: 0.8; }
+        .btn-docs:active { transform: translateY(-2px) scale(1); }
+        .btn-docs i { font-size: 18px; }
+        .btn-docs .arrow { transition: transform 0.3s ease; }
+        .btn-docs:hover .arrow { transform: translateX(6px); }
+
+        .tqto-wrap {
+            position: relative;
+            margin: 40px 0 30px;
+            animation: fadeUp 1.2s ease;
+        }
+
+        .tqto-header { text-align: center; margin-bottom: 40px; position: relative; }
+        .tqto-badge {
+            display: inline-flex; align-items: center; gap: 8px;
+            padding: 8px 18px; border-radius: 999px;
+            background: linear-gradient(135deg, rgba(168,85,247,0.15), rgba(59,130,246,0.15));
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            font-size: 10.5px; font-weight: 700;
+            letter-spacing: 3px; text-transform: uppercase;
+            color: var(--accent-3);
+            margin-bottom: 16px;
+            backdrop-filter: blur(10px);
+        }
+        .tqto-badge i { color: var(--accent-1); }
+        .tqto-title {
+            font-size: 36px; font-weight: 900;
+            letter-spacing: -1px; margin-bottom: 10px;
+            font-family: 'Space Grotesk', sans-serif;
+            background: linear-gradient(135deg, var(--accent-1), var(--accent-2), var(--accent-3), var(--accent-4));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            background-size: 300% auto;
+            animation: shine 6s linear infinite;
+            line-height: 1.1;
+        }
+        .tqto-subtitle {
+            font-size: 13px; color: var(--text-muted);
+            line-height: 1.7; max-width: 480px; margin: 0 auto;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .tqto-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            max-width: 1000px;
+            margin: 0 auto;
+            align-items: stretch;
+            justify-content: center;
+        }
+        @media (max-width: 900px) {
+            .tqto-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+        @media (max-width: 600px) {
+            .tqto-grid { grid-template-columns: 1fr; max-width: 420px; }
+            .tqto-title { font-size: 28px; }
+        }
+
+        .tqto-card {
+            position: relative;
+            background: linear-gradient(165deg, rgba(17, 26, 46, 0.95) 0%, rgba(13, 20, 37, 0.95) 100%);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--border-main);
+            border-radius: 22px;
+            padding: 24px 20px;
+            overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex; flex-direction: column;
+            height: 100%;
+        }
+        .tqto-card::before {
+            content: '';
+            position: absolute; top: 0; left: 0; right: 0; height: 3px;
+            background: linear-gradient(90deg, var(--accent-1), var(--accent-2), var(--accent-3));
+            opacity: 0.4; transition: opacity 0.4s ease;
+        }
+        .tqto-card::after {
+            content: '';
+            position: absolute; inset: 0;
+            background: radial-gradient(circle at top right, rgba(168,85,247,0.1), transparent 65%);
+            pointer-events: none; opacity: 0; transition: opacity 0.4s ease;
+        }
+        .tqto-card:hover {
+            transform: translateY(-8px);
+            border-color: rgba(59, 130, 246, 0.5);
+            box-shadow:
+                0 30px 60px -20px rgba(59,130,246,0.6),
+                0 0 0 1px rgba(59, 130, 246, 0.2) inset;
+        }
+        .tqto-card:hover::before { opacity: 1; }
+        .tqto-card:hover::after  { opacity: 1; }
+
+        .tqto-card-top {
+            display: flex; align-items: center; gap: 14px;
+            margin-bottom: 18px; position: relative; z-index: 2;
+        }
+        .tqto-avatar-wrap { position: relative; flex-shrink: 0; }
+        .tqto-avatar {
+            width: 60px; height: 60px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-weight: 900; font-size: 22px; color: white;
+            font-family: 'Space Grotesk', sans-serif;
+            position: relative; z-index: 2;
+            box-shadow: 0 10px 25px -6px rgba(0,0,0,0.7);
+        }
+        .tqto-avatar.kenz  { background: linear-gradient(135deg, #a855f7, #7c3aed); }
+        .tqto-avatar.iky   { background: linear-gradient(135deg, #3b82f6, #2563eb); }
+        .tqto-avatar.kyxzz { background: linear-gradient(135deg, #22c55e, #16a34a); }
+
+        .tqto-avatar-ring {
+            position: absolute; inset: -5px;
+            border-radius: 50%;
+            background: conic-gradient(from 0deg,
+                var(--accent-1), var(--accent-2), var(--accent-3), var(--accent-1));
+            z-index: 0;
+            animation: rotateRing 5s linear infinite;
+            opacity: 0.65;
+        }
+        .tqto-card:hover .tqto-avatar-ring { opacity: 1; }
+        @keyframes rotateRing { to { transform: rotate(360deg); } }
+        .tqto-avatar-ring::after {
+            content: '';
+            position: absolute; inset: 2px;
+            border-radius: 50%;
+            background: var(--bg-card);
+        }
+        .tqto-online-dot {
+            position: absolute; bottom: 2px; right: 2px;
+            width: 15px; height: 15px; border-radius: 50%;
+            background: var(--status-online);
+            border: 2.5px solid var(--bg-card);
+            z-index: 3;
+            box-shadow: 0 0 0 0 rgba(34,197,94,0.7);
+            animation: pulseGreen 2s infinite;
+        }
+        @keyframes pulseGreen {
+            0%   { box-shadow: 0 0 0 0 rgba(34,197,94,0.7); }
+            70%  { box-shadow: 0 0 0 8px rgba(34,197,94,0); }
+            100% { box-shadow: 0 0 0 0 rgba(34,197,94,0); }
+        }
+
+        .tqto-info { min-width: 0; flex: 1; }
+        .tqto-name {
+            font-size: 17px; font-weight: 800;
+            color: var(--text-main);
+            font-family: 'Space Grotesk', sans-serif;
+            display: flex; align-items: center; gap: 6px;
+            letter-spacing: 0.3px;
+        }
+        .tqto-name .verified { font-size: 12px; color: var(--accent-2); }
+        .tqto-role {
+            font-size: 10.5px; color: var(--text-muted);
+            text-transform: uppercase; letter-spacing: 1.4px;
+            margin-top: 3px; font-weight: 600;
+        }
+
+        .tqto-stats {
+            display: grid; grid-template-columns: repeat(3, 1fr);
+            gap: 8px; margin-bottom: 16px;
+            position: relative; z-index: 2;
+        }
+        .tqto-stat {
+            text-align: center;
+            padding: 10px 6px;
+            background: rgba(6, 9, 20, 0.6);
+            border: 1px solid rgba(148, 163, 184, 0.08);
+            border-radius: 10px;
+            transition: all 0.25s ease;
+        }
+        .tqto-stat:hover {
+            border-color: rgba(59, 130, 246, 0.4);
+            background: rgba(59,130,246,0.1);
+            transform: translateY(-2px);
+        }
+        .tqto-stat-val {
+            font-size: 15px; font-weight: 800;
+            color: var(--text-main);
+            font-family: 'Space Grotesk', sans-serif;
+            line-height: 1;
+        }
+        .tqto-stat-lbl {
+            font-size: 8.5px; color: var(--text-dim);
+            text-transform: uppercase; letter-spacing: 0.9px;
+            margin-top: 4px;
+        }
+
+        .tqto-skills { margin-bottom: 16px; position: relative; z-index: 2; }
+        .tqto-skill {
+            display: flex; align-items: center; justify-content: space-between;
+            font-size: 10px; color: var(--text-muted);
+            margin-bottom: 5px;
+        }
+        .tqto-skill .val {
+            font-weight: 700; color: var(--accent-3);
+            font-family: 'Space Grotesk', sans-serif;
+        }
+        .tqto-skill-bar {
+            height: 5px; background: rgba(30,41,59,0.6);
+            border-radius: 999px; overflow: hidden;
+            margin-bottom: 10px;
+        }
+        .tqto-skill-fill {
+            height: 100%; width: 0;
+            background: linear-gradient(90deg, var(--accent-1), var(--accent-2));
+            border-radius: 999px;
+            transition: width 1.4s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 0 10px rgba(59,130,246,0.5);
+        }
+        .tqto-card:hover .tqto-skill-fill { width: var(--w); }
+
+        .tqto-tags {
+            display: flex; flex-wrap: wrap; gap: 6px;
+            margin-bottom: 16px;
+            position: relative; z-index: 2;
+        }
+        .tqto-tag {
+            font-size: 9.5px; padding: 4px 10px;
+            background: rgba(59,130,246,0.1);
+            color: var(--accent-3);
+            border-radius: 999px;
+            border: 1px solid rgba(59,130,246,0.25);
+            font-weight: 600;
+            letter-spacing: 0.4px;
+        }
+
+        .tqto-socials {
+            display: flex; gap: 8px;
+            margin-top: auto;
+            padding-top: 16px;
+            border-top: 1px dashed rgba(148, 163, 184, 0.15);
+            position: relative; z-index: 2;
+        }
+        .tqto-social {
+            flex: 1;
+            height: 44px;
+            border-radius: 12px;
+            display: flex; align-items: center; justify-content: center;
+            gap: 6px;
+            font-size: 11px; font-weight: 700;
+            font-family: 'Space Grotesk', sans-serif;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(148, 163, 184, 0.12);
+            background: rgba(6, 9, 20, 0.6);
+            color: var(--text-muted);
+            letter-spacing: 0.3px;
+            position: relative;
+            overflow: hidden;
+        }
+        .tqto-social i { font-size: 14px; }
+        .tqto-social:hover { transform: translateY(-3px); }
+        .tqto-social.wa:hover {
+            color: #25d366;
+            border-color: rgba(37, 211, 102, 0.5);
+            background: rgba(37, 211, 102, 0.1);
+            box-shadow: 0 10px 25px -8px rgba(37, 211, 102, 0.5);
+        }
+        .tqto-social.gc:hover {
+            color: var(--status-online);
+            border-color: rgba(34, 197, 94, 0.5);
+            background: rgba(34, 197, 94, 0.1);
+            box-shadow: 0 10px 25px -8px rgba(34, 197, 94, 0.5);
+        }
+        .tqto-social.ig:hover {
+            color: #e1306c;
+            border-color: rgba(225, 48, 108, 0.5);
+            background: linear-gradient(135deg, rgba(225,48,108,0.15), rgba(245,158,11,0.15));
+            box-shadow: 0 10px 25px -8px rgba(225, 48, 108, 0.5);
+        }
+        .tqto-socials:has(> :only-child) .tqto-social { flex: 1; }
+
+        .tqto-quote {
+            font-size: 11px; font-style: italic;
+            color: var(--text-dim);
+            padding: 10px 14px;
+            background: rgba(6, 9, 20, 0.5);
+            border-left: 2px solid var(--accent-1);
+            border-radius: 0 8px 8px 0;
+            line-height: 1.6;
+            position: relative; z-index: 2;
+            margin-top: 4px;
+        }
+
+        .tqto-heart-float {
+            position: absolute; top: 14px; right: 14px;
+            color: var(--status-error); font-size: 13px;
+            animation: heartbeat 1.8s infinite;
+            z-index: 2;
+            filter: drop-shadow(0 0 6px rgba(239, 68, 68, 0.5));
+        }
+        @keyframes heartbeat {
+            0%, 100% { transform: scale(1); }
+            50%      { transform: scale(1.25); }
+        }
+
+        .tqto-divider {
+            display: flex; align-items: center; gap: 14px;
+            margin: 40px 0 24px; opacity: 0.5;
+        }
+        .tqto-divider::before, .tqto-divider::after {
+            content: ''; flex: 1; height: 1px;
+            background: linear-gradient(90deg, transparent, var(--accent-2), transparent);
+        }
+        .tqto-divider i { font-size: 11px; color: var(--accent-2); }
+
+        .tqto-footer {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 12.5px;
+            color: var(--text-muted);
             display: flex;
             align-items: center;
             justify-content: center;
-            margin-bottom: 1.5rem;
+            gap: 6px;
+            flex-wrap: wrap;
+            font-family: 'Inter', sans-serif;
+        }
+        .tqto-footer .heart {
+            color: var(--status-error);
+            animation: heartbeat 1.8s infinite;
+            display: inline-block;
+        }
+        .tqto-footer strong { color: var(--text-main); font-weight: 700; }
+
+        /* LOADING SCREEN DI TENGAH LAYAR */
+        #loadingScreen {
+            position: fixed;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            background: var(--bg-main);
+            transition: opacity 0.6s ease;
         }
 
-        .response-media-container video {
+        .loading-content {
             width: 100%;
-            height: 100%;
-            object-fit: cover;
-            border-radius: 12px;
+            max-width: 320px;
+            text-align: center;
+            animation: fadeIn 0.6s ease;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to   { opacity: 1; }
         }
 
-        input#searchInput {
-            width: 100%;
-            padding-left: 3rem;
-            padding-right: 1rem;
-            padding-top: 0.75rem;
-            padding-bottom: 0.75rem;
-            font-size: 0.875rem;
-            border: 1px solid #3b82f6;
-            border-radius: 6px;
-            background: #0a0f1b;
-            color: #e0e7ff;
+        .loading-logo {
+            position: relative;
+            width: 90px; height: 90px;
+            margin: 0 auto 24px;
+            display: flex; align-items: center; justify-content: center;
         }
-
-        input#searchInput::placeholder {
-            color: #94a3b8;
-        }
-
-        .loader {
-            width: 28px;
-            height: 28px;
-            border: 2px solid #1e293b;
-            border-top: 2px solid #3b82f6;
+        .logo-ring {
+            position: absolute; inset: 0;
             border-radius: 50%;
-            animation: spin 1s linear infinite;
+            border: 2px solid transparent;
+            border-top-color: var(--accent-1);
+            border-right-color: var(--accent-2);
+            animation: rotateRing 1.5s linear infinite;
+        }
+        .logo-ring-inner {
+            position: absolute; inset: 12px;
+            border-radius: 50%;
+            border: 2px solid transparent;
+            border-bottom-color: var(--accent-3);
+            border-left-color: var(--accent-4);
+            animation: rotateRingReverse 2s linear infinite;
+        }
+        @keyframes rotateRing        { to { transform: rotate(360deg); } }
+        @keyframes rotateRingReverse { to { transform: rotate(-360deg); } }
+
+        .logo-icon {
+            font-size: 26px;
+            background: linear-gradient(135deg, var(--accent-1), var(--accent-2));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: iconPulse 2s ease-in-out infinite;
+        }
+        @keyframes iconPulse {
+            0%, 100% { transform: scale(1); filter: brightness(1); }
+            50%      { transform: scale(1.15); filter: brightness(1.4); }
         }
 
-        @keyframes spin {
-            to { transform: rotate(360deg); }
+        .loading-title {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 24px;
+            font-weight: 800;
+            letter-spacing: 2px;
+            margin-bottom: 20px;
+            animation: titleFloat 3s ease-in-out infinite;
+        }
+        @keyframes titleFloat {
+            0%, 100% { transform: translateY(0); }
+            50%      { transform: translateY(-3px); }
         }
 
-        .stat-card {
-            transition: transform 0.3s ease, border-color 0.3s ease;
+        .loading-bar-wrap {
+            width: 100%;
+            height: 6px;
+            background: rgba(30, 41, 59, 0.7);
+            border-radius: 999px;
+            overflow: hidden;
+            margin-bottom: 14px;
+            position: relative;
+            box-shadow: inset 0 1px 2px rgba(0,0,0,0.5);
+        }
+        .loading-bar-fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg,
+                var(--accent-1),
+                var(--accent-2),
+                var(--accent-3),
+                var(--accent-1));
+            background-size: 200% 100%;
+            border-radius: 999px;
+            transition: width 0.15s linear;
+            box-shadow:
+                0 0 10px rgba(59,130,246,0.8),
+                0 0 20px rgba(168,85,247,0.6);
+            animation: barShine 2s linear infinite;
+        }
+        @keyframes barShine {
+            to { background-position: 200% 0; }
         }
 
-        .stat-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.2);
+        .loading-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 12px;
+            font-weight: 600;
+            letter-spacing: 0.8px;
+            margin-bottom: 18px;
+        }
+        .loading-status { color: var(--text-muted); }
+        .loading-percent {
+            color: var(--accent-3);
+            font-weight: 800;
+            font-size: 14px;
+            min-width: 42px;
+            text-align: right;
+            transition: color 0.3s ease;
+        }
+        .loading-percent.done {
+            color: var(--status-online);
+            text-shadow: 0 0 10px rgba(34,197,94,0.7);
         }
 
-        .blink {
-            animation: blink 2s infinite;
+        .loading-dots {
+            display: flex;
+            justify-content: center;
+            gap: 6px;
+        }
+        .loading-dots span {
+            width: 6px; height: 6px;
+            border-radius: 50%;
+            background: var(--accent-2);
+            animation: dotBounce 1.4s ease-in-out infinite;
+        }
+        .loading-dots span:nth-child(2) { animation-delay: 0.2s; }
+        .loading-dots span:nth-child(3) { animation-delay: 0.4s; }
+        @keyframes dotBounce {
+            0%, 80%, 100% { transform: scale(0.6); opacity: 0.4; }
+            40%           { transform: scale(1);   opacity: 1; }
         }
 
-        @keyframes blink {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
+        main, .navbar-custom {
+            opacity: 0;
+            transition: opacity 0.5s ease;
         }
+        main.revealed, .navbar-custom.revealed { opacity: 1; }
 
-        body::-webkit-scrollbar {
-            width: 8px;
-        }
-
-        body::-webkit-scrollbar-thumb {
-            background-color: #3b82f6;
-            border-radius: 4px;
-        }
+        #loadingScreen.hidden-fade { opacity: 0; pointer-events: none; }
     </style>
 </head>
 
-<body class="antialiased min-h-screen text-slate-300">
+<body class="antialiased min-h-screen">
 
-    <!-- Loading Screen -->
-    <div id="loadingScreen" class="fixed inset-0 bg-gray-900 flex items-center justify-center z-50">
-        <div class="text-center">
-            <div class="loader mx-auto mb-4"></div>
-            <p class="text-slate-400 text-s">Loading ...</p>
+    <div class="bg-orbs">
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+        <div class="orb orb-3"></div>
+    </div>
+    <div class="bg-grid"></div>
+
+    <div id="loadingScreen">
+        <div class="loading-content">
+            <div class="loading-logo">
+                <div class="logo-ring"></div>
+                <div class="logo-ring-inner"></div>
+                <i class="fas fa-code logo-icon"></i>
+            </div>
+            <div class="loading-title">
+                <span class="gradient-text">CHISA</span>
+                <span style="color: var(--text-muted); margin: 0 6px;">•</span>
+                <span class="gradient-text">API</span>
+            </div>
+            <div class="loading-bar-wrap">
+                <div class="loading-bar-fill" id="loadingBarFill"></div>
+            </div>
+            <div class="loading-info">
+                <span class="loading-status" id="loadingStatus">Initializing...</span>
+                <span class="loading-percent" id="loadingPercent">0%</span>
+            </div>
+            <div class="loading-dots">
+                <span></span><span></span><span></span>
+            </div>
         </div>
     </div>
 
-    <main class="max-w-2xl mx-auto px-8 py-16">
+    <div class="navbar-custom fixed top-0 left-0 right-0 z-40">
+        <div class="max-w-5xl mx-auto px-4">
+            <div class="flex items-center justify-between h-14">
+                <span class="status-online flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-[12px] blink font-semibold" style="font-family: 'Space Grotesk', sans-serif;">
+                    <i class="fas fa-circle text-[6px]"></i>
+                    <span>Online</span>
+                </span>
+                <a href="https://wa.me/6285715989482" target="_blank" rel="noopener"
+                   class="text-[13px] flex items-center gap-2 px-3.5 py-1.5 rounded-full hover:gap-3 transition-all duration-200 font-semibold"
+                   style="color: var(--text-muted); background: rgba(34,197,94,0.08); border: 1px solid rgba(34,197,94,0.2); font-family: 'Space Grotesk', sans-serif;">
+                    <i class="fab fa-whatsapp" style="color: var(--status-online); font-size: 14px;"></i>
+                    <span>Information</span>
+                </a>
+            </div>
+        </div>
+    </div>
 
-        <!-- Navbar -->
-        <div class="fixed top-0 left-0 right-0 z-49 bg-[#0a0f1b]/95 backdrop-blur-md border-b border-gray-800">
-            <div class="max-w-6xl mx-auto px-4">
-                <div class="flex items-center justify-between h-12">
-                    <div class="flex items-center gap-2">
-                        <span class="flex items-center gap-1 px-3 rounded-full bg-green-500/10 text-green-400 text-[13px] blink">
-                            <i class="fas fa-circle text-[6px]"></i>
-                            <span>Online</span>
-                        </span>
+    <main class="max-w-5xl mx-auto px-4 sm:px-8 py-16">
+        <div class="h-10"></div>
+
+        <div class="hero-banner">
+            <img src="https://images.unsplash.com/photo-1555066931-4365d14bab8c?q=80&w=1920&auto=format&fit=crop" alt="Hero Background" class="hero-bg" onerror="this.style.display='none'">
+            <div class="hero-overlay">
+                <img class="hero-gif"
+                     src="https://media.giphy.com/media/qgQUggAC3Pfv687qPC/giphy.gif"
+                     alt="Coding Animation"
+                     onerror="this.src='https://media.giphy.com/media/L1R1tvI9svkIWwpVYr/giphy.gif'">
+            </div>
+        </div>
+
+        <a href="/docs" class="btn-docs" style="font-family: 'Space Grotesk', sans-serif;">
+            <i class="fas fa-book-open"></i>
+            <span>Polling Documentation</span>
+            <i class="fas fa-arrow-right arrow"></i>
+        </a>
+
+        <div class="tqto-wrap">
+            <div class="tqto-header">
+                <div class="tqto-badge">
+                    <i class="fas fa-heart"></i>
+                    <span>Special Thanks</span>
+                </div>
+                <div class="tqto-title">Terima Kasih</div>
+                <div class="tqto-subtitle">
+                    Proyek CHISA • API ini tidak akan pernah ada tanpa dukungan, ide, dan dedikasi dari mereka. Terima kasih banyak!
+                </div>
+            </div>
+
+            <div class="tqto-grid">
+
+                <div class="tqto-card">
+                    <div class="tqto-heart-float"><i class="fas fa-heart"></i></div>
+                    <div class="tqto-card-top">
+                        <div class="tqto-avatar-wrap">
+                            <div class="tqto-avatar-ring"></div>
+                            <div class="tqto-avatar kenz">K</div>
+                            <div class="tqto-online-dot"></div>
+                        </div>
+                        <div class="tqto-info">
+                            <div class="tqto-name">
+                                Kenz
+                                <i class="fas fa-circle-check verified"></i>
+                            </div>
+                            <div class="tqto-role">Founder</div>
+                        </div>
                     </div>
-                    <a id="contactLink" href="https://wa.me/6285715989482" 
-                       target="_blank" 
-                       class="text-[13px] text-slate-300 hover:text-white flex items-center gap-1 px-3 hover:gap-2 transition-all duration-200">
-                        <i class="fab fa-whatsapp text-green-400"></i>
-                        <span>Information Api</span>
-                    </a>
+
+                    <div class="tqto-stats">
+                        <div class="tqto-stat">
+                            <div class="tqto-stat-val">98%</div>
+                            <div class="tqto-stat-lbl">Support</div>
+                        </div>
+                        <div class="tqto-stat">
+                            <div class="tqto-stat-val">24/7</div>
+                            <div class="tqto-stat-lbl">Active</div>
+                        </div>
+                        <div class="tqto-stat">
+                            <div class="tqto-stat-val">★ 5.0</div>
+                            <div class="tqto-stat-lbl">Rating</div>
+                        </div>
+                    </div>
+
+                    <div class="tqto-skills">
+                        <div class="tqto-skill">
+                            <span>Support</span>
+                            <span class="val">98%</span>
+                        </div>
+                        <div class="tqto-skill-bar">
+                            <div class="tqto-skill-fill" style="--w: 98%"></div>
+                        </div>
+                        <div class="tqto-skill">
+                            <span>Dedication</span>
+                            <span class="val">95%</span>
+                        </div>
+                        <div class="tqto-skill-bar">
+                            <div class="tqto-skill-fill" style="--w: 95%"></div>
+                        </div>
+                    </div>
+
+                    <div class="tqto-tags">
+                        <span class="tqto-tag">Founder</span>
+                        <span class="tqto-tag">Support</span>
+                        <span class="tqto-tag">Mentor</span>
+                    </div>
+
+                    <div class="tqto-quote">
+                        "Keep building, keep learning, never give up."
+                    </div>
+
+                    <div class="tqto-socials">
+                        <a href="https://wa.me/6285758459672" target="_blank" class="tqto-social wa" title="Chat WhatsApp">
+                            <i class="fab fa-whatsapp"></i>
+                            <span>WA</span>
+                        </a>
+                        <a href="https://chat.whatsapp.com/C5O7laRDo8p9PqwRRnFdXN?s=cl&p=a&mlu=4&ilr=4" target="_blank" class="tqto-social gc" title="Join Group">
+                            <i class="fas fa-users"></i>
+                            <span>Group</span>
+                        </a>
+                    </div>
                 </div>
-            </div>
-        </div>
 
-        <div class="h-6"></div>
+                <div class="tqto-card">
+                    <div class="tqto-heart-float"><i class="fas fa-heart"></i></div>
+                    <div class="tqto-card-top">
+                        <div class="tqto-avatar-wrap">
+                            <div class="tqto-avatar-ring"></div>
+                            <div class="tqto-avatar iky">I</div>
+                            <div class="tqto-online-dot"></div>
+                        </div>
+                        <div class="tqto-info">
+                            <div class="tqto-name">
+                                Iky
+                                <i class="fas fa-circle-check verified"></i>
+                            </div>
+                            <div class="tqto-role">Contributor</div>
+                        </div>
+                    </div>
 
-        <!-- Header -->
-        <div class="text-left mb-8">
-            <div class="flex items-center gap-4 mb-4">
-                <div class="w-12 md:w-10 h-12 md:h-10 rounded-lg bg-gradient-to-br from-purple-800 to-indigo-900 flex items-center justify-center">
-                    <i class="fas fa-code text-white text-lg"></i>
+                    <div class="tqto-stats">
+                        <div class="tqto-stat">
+                            <div class="tqto-stat-val">142</div>
+                            <div class="tqto-stat-lbl">Commits</div>
+                        </div>
+                        <div class="tqto-stat">
+                            <div class="tqto-stat-val">28</div>
+                            <div class="tqto-stat-lbl">Fixes</div>
+                        </div>
+                        <div class="tqto-stat">
+                            <div class="tqto-stat-val">★ 4.9</div>
+                            <div class="tqto-stat-lbl">Rating</div>
+                        </div>
+                    </div>
+
+                    <div class="tqto-skills">
+                        <div class="tqto-skill">
+                            <span>Backend</span>
+                            <span class="val">92%</span>
+                        </div>
+                        <div class="tqto-skill-bar">
+                            <div class="tqto-skill-fill" style="--w: 92%"></div>
+                        </div>
+                        <div class="tqto-skill">
+                            <span>Frontend</span>
+                            <span class="val">85%</span>
+                        </div>
+                        <div class="tqto-skill-bar">
+                            <div class="tqto-skill-fill" style="--w: 85%"></div>
+                        </div>
+                    </div>
+
+                    <div class="tqto-tags">
+                        <span class="tqto-tag">Node.js</span>
+                        <span class="tqto-tag">API</span>
+                        <span class="tqto-tag">Backend</span>
+                    </div>
+
+                    <div class="tqto-quote">
+                        "Code is poetry written in logic."
+                    </div>
+
+                    <div class="tqto-socials">
+                        <a href="https://wa.me/6285135286643" target="_blank" class="tqto-social wa" title="Chat WhatsApp">
+                            <i class="fab fa-whatsapp"></i>
+                            <span>WA</span>
+                        </a>
+                        <a href="https://chat.whatsapp.com/JoxqrurgTGk5zvanX1ogMi?s=cl&p=a&mlu=4" target="_blank" class="tqto-social gc" title="Join Group">
+                            <i class="fas fa-users"></i>
+                            <span>Group</span>
+                        </a>
+                    </div>
                 </div>
-                <h1 id="titleApi" class="text-3xl md:text-4xl font-bold gradient-text">Riyan Official API</h1>
-            </div>
-            <p id="descApi" class="text-slate-400 text-[14px] mx-auto mb-2">
-                Welcome to Riyan Official API documentation. Explore and test our complete collection of API endpoints in real-time.
-            </p>
-        </div>
 
-        <!-- Stats Panel -->
-        <div class="mb-12 flex gap-5">
-            <div class="text-center flex-1 stat-card">
-                <div class="text-2xl font-bold text-white" id="totalApis">0</div>
-                <div class="text-[13px] text-slate-400">Endpoints</div>
-            </div>
-            <div class="text-center flex-1 stat-card">
-                <div class="text-2xl font-bold text-white" id="totalCategories">0</div>
-                <div class="text-[13px] text-slate-400">Categories</div>
-            </div>
-            <div class="text-center flex-1 stat-card">
-                <div class="text-2xl font-bold text-white" id="batteryLevel">100%</div>
-                <div class="text-[13px] text-slate-400">Battery</div>
-            </div>
-        </div>
+                <div class="tqto-card">
+                    <div class="tqto-heart-float"><i class="fas fa-heart"></i></div>
+                    <div class="tqto-card-top">
+                        <div class="tqto-avatar-wrap">
+                            <div class="tqto-avatar-ring"></div>
+                            <div class="tqto-avatar kyxzz">K</div>
+                            <div class="tqto-online-dot"></div>
+                        </div>
+                        <div class="tqto-info">
+                            <div class="tqto-name">
+                                Kyyxzz
+                                <i class="fas fa-circle-check verified"></i>
+                            </div>
+                            <div class="tqto-role">Helper</div>
+                        </div>
+                    </div>
 
-        <!-- Banner Video -->
-        <div class="response-media-container">
-            <video src="https://files.catbox.moe/fjgi2w.mp4" autoplay loop muted playsinline></video>
-        </div>
+                    <div class="tqto-stats">
+                        <div class="tqto-stat">
+                            <div class="tqto-stat-val">87</div>
+                            <div class="tqto-stat-lbl">Tests</div>
+                        </div>
+                        <div class="tqto-stat">
+                            <div class="tqto-stat-val">56</div>
+                            <div class="tqto-stat-lbl">Helped</div>
+                        </div>
+                        <div class="tqto-stat">
+                            <div class="tqto-stat-val">★ 5.0</div>
+                            <div class="tqto-stat-lbl">Rating</div>
+                        </div>
+                    </div>
 
-        <!-- Search Bar -->
-        <div class="flex items-center justify-between mb-4">
-            <div class="flex-1 relative">
-                <div class="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none">
-                    <span class="material-icons text-gray-500 text-lg">search</span>
+                    <div class="tqto-skills">
+                        <div class="tqto-skill">
+                            <span>Testing</span>
+                            <span class="val">96%</span>
+                        </div>
+                        <div class="tqto-skill-bar">
+                            <div class="tqto-skill-fill" style="--w: 96%"></div>
+                        </div>
+                        <div class="tqto-skill">
+                            <span>Bug Report</span>
+                            <span class="val">90%</span>
+                        </div>
+                        <div class="tqto-skill-bar">
+                            <div class="tqto-skill-fill" style="--w: 90%"></div>
+                        </div>
+                    </div>
+
+                    <div class="tqto-tags">
+                        <span class="tqto-tag">QA</span>
+                        <span class="tqto-tag">Testing</span>
+                        <span class="tqto-tag">Support</span>
+                    </div>
+
+                    <div class="tqto-quote">
+                        "Every bug found is a gift to the project."
+                    </div>
+
+                    <div class="tqto-socials">
+                        <a href="https://wa.me/6283895824176" target="_blank" class="tqto-social wa" title="Chat WhatsApp">
+                            <i class="fab fa-whatsapp"></i>
+                            <span>WA</span>
+                        </a>
+                        <a href="https://www.instagram.com/kyxzz67?rpxt=YjFrYXF2cDBtbnN4" target="_blank" class="tqto-social ig" title="Instagram">
+                            <i class="fab fa-instagram"></i>
+                            <span>IG</span>
+                        </a>
+                    </div>
                 </div>
-                <input 
-                    type="text" 
-                    id="searchInput" 
-                    placeholder="Search API endpoints..." 
-                    class="w-full pl-12 pr-5 py-3 text-sm border border-gray-700 bg-gray-800 text-slate-300 placeholder-slate-500 focus:outline-none focus:border-indigo-500"
-                >
+
+            </div>
+
+            <div class="tqto-divider">
+                <i class="fas fa-heart"></i>
+            </div>
+
+            <div class="tqto-footer">
+                Made with <span class="heart"><i class="fas fa-heart"></i></span> by
+                <strong>CHISA</strong> • Special thanks to
+                <strong>Kenz</strong>, <strong>Iky</strong>, <strong>Kyyxzz</strong>
             </div>
         </div>
 
-        <!-- API List -->
-        <div id="content" class="space-y-4">
-            <div id="noResults" class="text-center py-16 hidden">
-                <div class="max-w-md mx-auto">
-                    <i class="fas fa-search text-2xl text-slate-500 mb-3"></i>
-                    <h3 class="text-xs text-slate-400 mb-2">No results found</h3>
-                    <p class="text-xxs text-slate-500">Try different keywords</p>
-                </div>
-            </div>
-            <div id="apiList" class="space-y-3">
-                <!-- API list will be loaded dynamically -->
-            </div>
-        </div>
-
-        <!-- Footer -->
-        <footer class="mt-12 pt-4 border-t border-gray-800">
-            <p id="footer" class="text-slate-400 text-[15px] text-center mx-auto">
-                © 2025 Riyan Official API • v1.0.0
+        <footer class="mt-16 pt-6" style="border-top: 1px solid var(--border-main);">
+            <p class="text-[13px] text-center mx-auto" style="color: var(--text-muted); font-family: 'Space Grotesk', sans-serif;">
+                © 2025 <span class="gradient-text font-bold">CHISA • API</span> • v1.0.0
             </p>
         </footer>
-
     </main>
 
     <script>
-        function updateBatteryStatus() {
-            if('getBattery' in navigator){
-                navigator.getBattery().then(function(battery){
-                    updateBatteryInfo(battery);
-                    battery.addEventListener('levelchange',()=>updateBatteryInfo(battery));
-                    battery.addEventListener('chargingchange',()=>updateBatteryInfo(battery));
-                });
-            }else{
-                updateBatteryUI(Math.floor(Math.random()*100)+1,true);
+    (function loadingProgress() {
+        const barFill = document.getElementById('loadingBarFill');
+        const percentEl = document.getElementById('loadingPercent');
+        const statusEl = document.getElementById('loadingStatus');
+        const loadingScreen = document.getElementById('loadingScreen');
+
+        if (!barFill || !percentEl || !loadingScreen) return;
+
+        const statusMessages = [
+            { at: 0,   text: 'Initializing...' },
+            { at: 15,  text: 'Loading assets...' },
+            { at: 30,  text: 'Connecting server...' },
+            { at: 50,  text: 'Fetching data...' },
+            { at: 65,  text: 'Building interface...' },
+            { at: 80,  text: 'Finalizing...' },
+            { at: 95,  text: 'Almost ready...' },
+            { at: 100, text: 'Welcome!' }
+        ];
+
+        let progress = 0;
+        let currentStatus = '';
+
+        function updateStatus(p) {
+            let msg = statusMessages[0].text;
+            for (const s of statusMessages) {
+                if (p >= s.at) msg = s.text;
+            }
+            if (msg !== currentStatus) {
+                currentStatus = msg;
+                statusEl.textContent = msg;
             }
         }
-        function updateBatteryInfo(battery){
-            updateBatteryUI(Math.round(battery.level*100),battery.charging);
-        }
-        function updateBatteryUI(level,isCharging){
-            document.querySelector('#batteryLevel').textContent=level+'%';
-        }
-        document.addEventListener('DOMContentLoaded',function(){
-            updateBatteryStatus();
-            setInterval(updateBatteryStatus,30000);
-        });
-    </script>
 
-    <script src="/script.js"></script>
+        function revealContent() {
+            document.querySelectorAll('main, .navbar-custom').forEach(el => {
+                el.classList.add('revealed');
+            });
+            loadingScreen.classList.add('hidden-fade');
+            setTimeout(() => loadingScreen.remove(), 700);
+        }
+
+        function tick() {
+            if (progress >= 100) {
+                percentEl.textContent = '100%';
+                percentEl.classList.add('done');
+                updateStatus(100);
+                setTimeout(revealContent, 400);
+                return;
+            }
+
+            let increment;
+            if (progress < 30)      increment = Math.random() * 4 + 2;
+            else if (progress < 70) increment = Math.random() * 2.5 + 1;
+            else if (progress < 95) increment = Math.random() * 1.5 + 0.5;
+            else                    increment = Math.random() * 0.8 + 0.3;
+
+            progress = Math.min(100, progress + increment);
+
+            const display = Math.floor(progress);
+            barFill.style.width = display + '%';
+            percentEl.textContent = display + '%';
+            updateStatus(display);
+
+            let delay;
+            if (progress < 30)      delay = 40;
+            else if (progress < 70) delay = 70;
+            else if (progress < 95) delay = 110;
+            else                    delay = 160;
+
+            setTimeout(tick, delay);
+        }
+
+        setTimeout(tick, 200);
+    })();
+
+    (function animateSkillBars() {
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const w = entry.target.style.getPropertyValue('--w').trim();
+                    entry.target.style.width = w || '0%';
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.3 });
+
+        document.querySelectorAll('.tqto-skill-fill').forEach(el => {
+            const w = getComputedStyle(el).getPropertyValue('--w').trim();
+            el.style.width = '0%';
+            setTimeout(() => { el.style.width = w; }, 700);
+            observer.observe(el);
+        });
+    })();
+    </script>
 
 </body>
 </html>
