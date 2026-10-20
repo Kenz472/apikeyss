@@ -158,6 +158,10 @@ app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'src/index.html'));
 });
 
+app.get('/dosc', (req, res) => {
+  res.sendFile(path.join(__dirname, 'src/dosc.html'));
+});
+
 app.use((req, res, next) => {
   const err404 = path.join(__dirname, 'src', '404.html');
   if (fs.existsSync(err404)) {
