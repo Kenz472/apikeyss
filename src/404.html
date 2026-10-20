@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>404</title>
+<style>
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  body {
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: linear-gradient(135deg, #1e1b4b 0%, #312e81 40%, #4c1d95 70%, #1e1b4b 100%);
+    background-size: 400% 400%;
+    animation: bgShift 15s ease infinite;
+    font-family: 'Segoe UI', Tahoma, sans-serif;
+    overflow: hidden;
+    position: relative;
+  }
+
+  @keyframes bgShift {
+    0%, 100% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+  }
+
+  .particles {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    z-index: 0;
+  }
+
+  .particle {
+    position: absolute;
+    border-radius: 50%;
+    animation: floatUp linear infinite;
+  }
+
+  @keyframes floatUp {
+    0% {
+      transform: translateY(100vh) scale(0);
+      opacity: 0;
+    }
+    10% { opacity: 1; }
+    90% { opacity: 1; }
+    100% {
+      transform: translateY(-10vh) scale(1.5);
+      opacity: 0;
+    }
+  }
+
+  .glow-ring {
+    position: absolute;
+    width: 500px;
+    height: 500px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(0, 242, 254, 0.18) 0%, transparent 70%);
+    animation: pulse 4s ease-in-out infinite;
+    z-index: 1;
+    pointer-events: none;
+  }
+
+  .glow-ring:nth-child(2) {
+    width: 700px;
+    height: 700px;
+    background: radial-gradient(circle, rgba(240, 147, 251, 0.12) 0%, transparent 70%);
+    animation-delay: 2s;
+  }
+
+  @keyframes pulse {
+    0%, 100% { transform: scale(1); opacity: 0.5; }
+    50% { transform: scale(1.3); opacity: 1; }
+  }
+
+  .container {
+    position: relative;
+    z-index: 3;
+    text-align: center;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 25px;
+  }
+
+  .error-code {
+    font-size: clamp(110px, 22vw, 240px);
+    font-weight: 900;
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    line-height: 1;
+    letter-spacing: 8px;
+    perspective: 1000px;
+  }
+
+  .digit {
+    background: linear-gradient(180deg, #00f2fe 0%, #4facfe 40%, #f093fb 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: bounce 2.4s ease-in-out infinite;
+    filter: drop-shadow(0 0 25px rgba(79, 172, 254, 0.9))
+            drop-shadow(0 0 50px rgba(240, 147, 251, 0.5));
+  }
+
+  .digit:nth-child(1) { animation-delay: 0s; }
+  .digit:nth-child(2) { animation-delay: 0.25s; }
+  .digit:nth-child(3) { animation-delay: 0.5s; }
+
+  @keyframes bounce {
+    0%, 100% {
+      transform: translateY(0) rotateX(0deg) rotateZ(0deg);
+    }
+    25% {
+      transform: translateY(-25px) rotateX(15deg) rotateZ(-6deg);
+    }
+    50% {
+      transform: translateY(0) rotateX(0deg) rotateZ(0deg);
+    }
+    75% {
+      transform: translateY(-12px) rotateX(-10deg) rotateZ(6deg);
+    }
+  }
+
+  .gif-container {
+    width: clamp(180px, 30vw, 280px);
+    animation: float 3.5s ease-in-out infinite;
+    filter: drop-shadow(0 15px 40px rgba(0, 242, 254, 0.6))
+            drop-shadow(0 0 60px rgba(240, 147, 251, 0.4));
+    position: relative;
+  }
+
+  .gif-container::after {
+    content: '';
+    position: absolute;
+    inset: -20px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(0, 242, 254, 0.2) 0%, transparent 70%);
+    animation: pulse 3s ease-in-out infinite;
+    z-index: -1;
+  }
+
+  .gif-container img {
+    width: 100%;
+    height: auto;
+    display: block;
+    border-radius: 20px;
+  }
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0) rotate(0deg); }
+    50% { transform: translateY(-25px) rotate(3deg); }
+  }
+
+  .caption {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    max-width: 520px;
+  }
+
+  .caption-title {
+    font-size: clamp(22px, 4vw, 34px);
+    font-weight: 800;
+    letter-spacing: 2px;
+    background: linear-gradient(90deg, #00f2fe, #4facfe, #f093fb, #00f2fe);
+    background-size: 300% 100%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: shimmer 4s linear infinite;
+    filter: drop-shadow(0 0 20px rgba(79, 172, 254, 0.6));
+  }
+
+  @keyframes shimmer {
+    0% { background-position: 0% 50%; }
+    100% { background-position: 300% 50%; }
+  }
+
+  .caption-sub {
+    font-size: clamp(14px, 2vw, 17px);
+    color: #c7d2fe;
+    line-height: 1.6;
+    letter-spacing: 0.5px;
+    text-shadow: 0 0 15px rgba(147, 197, 253, 0.4);
+    animation: fadeIn 1.5s ease-out;
+  }
+
+  .caption-sub .highlight {
+    color: #67e8f9;
+    font-weight: 700;
+    text-shadow: 0 0 12px rgba(103, 232, 249, 0.8);
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(15px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .btn {
+    display: inline-block;
+    padding: 16px 48px;
+    font-size: 17px;
+    font-weight: 700;
+    color: #fff;
+    text-decoration: none;
+    background: linear-gradient(135deg, #00f2fe, #4facfe, #f093fb);
+    background-size: 200% 200%;
+    border-radius: 50px;
+    letter-spacing: 2px;
+    transition: all 0.4s ease;
+    box-shadow: 0 10px 30px rgba(79, 172, 254, 0.6),
+                0 0 40px rgba(240, 147, 251, 0.3);
+    position: relative;
+    overflow: hidden;
+    animation: gradientShift 4s ease infinite;
+  }
+
+  @keyframes gradientShift {
+    0%, 100% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+  }
+
+  .btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.5), transparent);
+    transition: left 0.6s ease;
+  }
+
+  .btn:hover::before {
+    left: 100%;
+  }
+
+  .btn:hover {
+    transform: translateY(-5px) scale(1.08);
+    box-shadow: 0 15px 45px rgba(79, 172, 254, 0.9),
+                0 0 60px rgba(240, 147, 251, 0.6);
+  }
+
+  .btn:active {
+    transform: translateY(-2px) scale(1.03);
+  }
+</style>
+</head>
+<body>
+
+  <div class="glow-ring"></div>
+  <div class="glow-ring"></div>
+  <div class="particles" id="particles"></div>
+
+  <div class="container">
+    <div class="error-code">
+      <span class="digit">4</span>
+      <span class="digit">0</span>
+      <span class="digit">4</span>
+    </div>
+
+    <div class="gif-container">
+      <img 
+        src="https://media.giphy.com/media/l41YcK5fhq0Lq9q3C/giphy.gif" 
+        alt="404"
+      >
+    </div>
+
+    <div class="caption">
+      <div class="caption-title">Waduh, Tersesat di Dimensi Lain!</div>
+      <p class="caption-sub">
+        Halaman yang kamu cari sepertinya <span class="highlight">menghilang</span> 
+        atau belum pernah ada. Tenang, kamu masih bisa kembali ke jalur yang benar.
+      </p>
+    </div>
+
+    <a href="/" class="btn">Kembali ke Beranda</a>
+  </div>
+
+  <script>
+    const particlesContainer = document.getElementById('particles');
+    const particleCount = 50;
+    const colors = ['#00f2fe', '#f093fb', '#4facfe', '#ffffff', '#a855f7'];
+
+    for (let i = 0; i < particleCount; i++) {
+      const p = document.createElement('div');
+      p.classList.add('particle');
+      
+      const size = Math.random() * 6 + 2;
+      p.style.width = size + 'px';
+      p.style.height = size + 'px';
+      p.style.left = Math.random() * 100 + '%';
+      p.style.animationDuration = (Math.random() * 10 + 8) + 's';
+      p.style.animationDelay = (Math.random() * 10) + 's';
+      p.style.opacity = Math.random() * 0.6 + 0.2;
+      p.style.background = colors[Math.floor(Math.random() * colors.length)];
+      p.style.boxShadow = `0 0 ${size * 3}px ${colors[Math.floor(Math.random() * colors.length)]}`;
+      
+      particlesContainer.appendChild(p);
+    }
+
+    document.addEventListener('mousemove', (e) => {
+      const x = (e.clientX / window.innerWidth - 0.5) * 20;
+      const y = (e.clientY / window.innerHeight - 0.5) * 20;
+      document.querySelector('.error-code').style.transform = `translate(${x}px, ${y}px)`;
+    });
+  </script>
+
+</body>
+</html>
