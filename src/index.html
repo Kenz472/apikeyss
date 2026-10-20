@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Browse through our collection of API endpoints. Find what you need or discover something new.">
+    <meta name="theme-color" content="#0a0f1b">
+    <title>Riyan Official API</title>
+    <link rel="icon" href="/src/icon.png" type="image/png">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Ubuntu+Mono:ital,wght@0,400;0,700;1,400;1,700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        'mono': ['Ubuntu Mono', 'monospace'],
+                        'sans': ['Inter', 'system-ui', 'sans-serif']
+                    },
+                    fontSize: {
+                        'xxs': ['0.65rem', { lineHeight: '0.9rem' }]
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            background: #0a0f1b;
+            color: #e0e7ff;
+            font-family: 'Ubuntu Mono', monospace;
+        }
+
+        .gradient-text {
+            background: linear-gradient(90deg, #a855f7, #3b82f6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .response-media-container {
+            width: 100%;
+            aspect-ratio: 16/9;
+            border-radius: 12px;
+            overflow: hidden;
+            background: #000814;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .response-media-container video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 12px;
+        }
+
+        input#searchInput {
+            width: 100%;
+            padding-left: 3rem;
+            padding-right: 1rem;
+            padding-top: 0.75rem;
+            padding-bottom: 0.75rem;
+            font-size: 0.875rem;
+            border: 1px solid #3b82f6;
+            border-radius: 6px;
+            background: #0a0f1b;
+            color: #e0e7ff;
+        }
+
+        input#searchInput::placeholder {
+            color: #94a3b8;
+        }
+
+        .loader {
+            width: 28px;
+            height: 28px;
+            border: 2px solid #1e293b;
+            border-top: 2px solid #3b82f6;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .stat-card {
+            transition: transform 0.3s ease, border-color 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.2);
+        }
+
+        .blink {
+            animation: blink 2s infinite;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        body::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        body::-webkit-scrollbar-thumb {
+            background-color: #3b82f6;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+
+<body class="antialiased min-h-screen text-slate-300">
+
+    <!-- Loading Screen -->
+    <div id="loadingScreen" class="fixed inset-0 bg-gray-900 flex items-center justify-center z-50">
+        <div class="text-center">
+            <div class="loader mx-auto mb-4"></div>
+            <p class="text-slate-400 text-s">Loading ...</p>
+        </div>
+    </div>
+
+    <main class="max-w-2xl mx-auto px-8 py-16">
+
+        <!-- Navbar -->
+        <div class="fixed top-0 left-0 right-0 z-49 bg-[#0a0f1b]/95 backdrop-blur-md border-b border-gray-800">
+            <div class="max-w-6xl mx-auto px-4">
+                <div class="flex items-center justify-between h-12">
+                    <div class="flex items-center gap-2">
+                        <span class="flex items-center gap-1 px-3 rounded-full bg-green-500/10 text-green-400 text-[13px] blink">
+                            <i class="fas fa-circle text-[6px]"></i>
+                            <span>Online</span>
+                        </span>
+                    </div>
+                    <a id="contactLink" href="https://wa.me/6285715989482" 
+                       target="_blank" 
+                       class="text-[13px] text-slate-300 hover:text-white flex items-center gap-1 px-3 hover:gap-2 transition-all duration-200">
+                        <i class="fab fa-whatsapp text-green-400"></i>
+                        <span>Information Api</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="h-6"></div>
+
+        <!-- Header -->
+        <div class="text-left mb-8">
+            <div class="flex items-center gap-4 mb-4">
+                <div class="w-12 md:w-10 h-12 md:h-10 rounded-lg bg-gradient-to-br from-purple-800 to-indigo-900 flex items-center justify-center">
+                    <i class="fas fa-code text-white text-lg"></i>
+                </div>
+                <h1 id="titleApi" class="text-3xl md:text-4xl font-bold gradient-text">Riyan Official API</h1>
+            </div>
+            <p id="descApi" class="text-slate-400 text-[14px] mx-auto mb-2">
+                Welcome to Riyan Official API documentation. Explore and test our complete collection of API endpoints in real-time.
+            </p>
+        </div>
+
+        <!-- Stats Panel -->
+        <div class="mb-12 flex gap-5">
+            <div class="text-center flex-1 stat-card">
+                <div class="text-2xl font-bold text-white" id="totalApis">0</div>
+                <div class="text-[13px] text-slate-400">Endpoints</div>
+            </div>
+            <div class="text-center flex-1 stat-card">
+                <div class="text-2xl font-bold text-white" id="totalCategories">0</div>
+                <div class="text-[13px] text-slate-400">Categories</div>
+            </div>
+            <div class="text-center flex-1 stat-card">
+                <div class="text-2xl font-bold text-white" id="batteryLevel">100%</div>
+                <div class="text-[13px] text-slate-400">Battery</div>
+            </div>
+        </div>
+
+        <!-- Banner Video -->
+        <div class="response-media-container">
+            <video src="https://files.catbox.moe/fjgi2w.mp4" autoplay loop muted playsinline></video>
+        </div>
+
+        <!-- Search Bar -->
+        <div class="flex items-center justify-between mb-4">
+            <div class="flex-1 relative">
+                <div class="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none">
+                    <span class="material-icons text-gray-500 text-lg">search</span>
+                </div>
+                <input 
+                    type="text" 
+                    id="searchInput" 
+                    placeholder="Search API endpoints..." 
+                    class="w-full pl-12 pr-5 py-3 text-sm border border-gray-700 bg-gray-800 text-slate-300 placeholder-slate-500 focus:outline-none focus:border-indigo-500"
+                >
+            </div>
+        </div>
+
+        <!-- API List -->
+        <div id="content" class="space-y-4">
+            <div id="noResults" class="text-center py-16 hidden">
+                <div class="max-w-md mx-auto">
+                    <i class="fas fa-search text-2xl text-slate-500 mb-3"></i>
+                    <h3 class="text-xs text-slate-400 mb-2">No results found</h3>
+                    <p class="text-xxs text-slate-500">Try different keywords</p>
+                </div>
+            </div>
+            <div id="apiList" class="space-y-3">
+                <!-- API list will be loaded dynamically -->
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer class="mt-12 pt-4 border-t border-gray-800">
+            <p id="footer" class="text-slate-400 text-[15px] text-center mx-auto">
+                © 2025 Riyan Official API • v1.0.0
+            </p>
+        </footer>
+
+    </main>
+
+    <script>
+        function updateBatteryStatus() {
+            if('getBattery' in navigator){
+                navigator.getBattery().then(function(battery){
+                    updateBatteryInfo(battery);
+                    battery.addEventListener('levelchange',()=>updateBatteryInfo(battery));
+                    battery.addEventListener('chargingchange',()=>updateBatteryInfo(battery));
+                });
+            }else{
+                updateBatteryUI(Math.floor(Math.random()*100)+1,true);
+            }
+        }
+        function updateBatteryInfo(battery){
+            updateBatteryUI(Math.round(battery.level*100),battery.charging);
+        }
+        function updateBatteryUI(level,isCharging){
+            document.querySelector('#batteryLevel').textContent=level+'%';
+        }
+        document.addEventListener('DOMContentLoaded',function(){
+            updateBatteryStatus();
+            setInterval(updateBatteryStatus,30000);
+        });
+    </script>
+
+    <script src="/script.js"></script>
+
+</body>
+</html>
