@@ -3,14 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CHISA • API - Documentation</title>
+    <meta name="description" content="CHISA • API - Explore & test API endpoints.">
+    <meta name="theme-color" content="#060914">
+    <title>CHISA • API</title>
     <link rel="icon" href="https://cdn.zass.in/lsXr7NCsX8.jpeg" type="image/jpeg">
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Ubuntu+Mono:ital,wght@0,400;0,700;1,400;1,700&family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Ubuntu+Mono:ital,wght@0,400;0,700&family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
     <script>
         tailwind.config = {
             darkMode: 'class',
@@ -20,227 +22,627 @@
                         'mono': ['Ubuntu Mono', 'monospace'],
                         'sans': ['Inter', 'system-ui', 'sans-serif'],
                         'display': ['Space Grotesk', 'sans-serif']
-                    }
+                    },
+                    fontSize: { 'xxs': ['0.65rem', { lineHeight: '0.9rem' }] }
                 }
             }
         }
     </script>
     <style>
-        body { background: #0f172a; color: #e2e8f0; font-family: 'Inter', sans-serif; }
-        .sidebar { background: #1e293b; transition: transform 0.3s ease; }
-        .main-content { background: #0f172a; transition: margin-left 0.3s ease; }
+        :root {
+            --bg-main:        #04070f;
+            --bg-card:        #0a1020;
+            --bg-elevated:    #0f172a;
+            --accent-1:       #a855f7;
+            --accent-2:       #3b82f6;
+            --accent-3:       #22d3ee;
+            --accent-4:       #ec4899;
+            --accent-5:       #f59e0b;
+            --text-main:      #f1f5ff;
+            --text-muted:     #94a3b8;
+            --text-dim:       #64748b;
+            --border-main:    rgba(148, 163, 184, 0.12);
+            --border-accent:  #3b82f6;
+            --status-online:  #22c55e;
+            --status-error:   #ef4444;
+        }
+
+        * { -webkit-tap-highlight-color: transparent; }
+        html { scroll-behavior: smooth; }
+
+        body {
+            background: var(--bg-main);
+            color: var(--text-main);
+            font-family: 'Inter', system-ui, sans-serif;
+            overflow-x: hidden;
+            position: relative;
+            min-height: 100vh;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            pointer-events: none;
+            background:
+                radial-gradient(ellipse 80% 50% at 50% -20%, rgba(168, 85, 247, 0.15), transparent),
+                radial-gradient(ellipse 60% 50% at 80% 100%, rgba(59, 130, 246, 0.12), transparent),
+                radial-gradient(ellipse 50% 40% at 0% 60%, rgba(236, 72, 153, 0.08), transparent);
+        }
+
+        .bg-orbs {
+            position: fixed; inset: 0; z-index: 0;
+            pointer-events: none; overflow: hidden;
+        }
+        .orb {
+            position: absolute; border-radius: 50%;
+            filter: blur(90px); opacity: 0.35;
+            animation: float 24s ease-in-out infinite;
+        }
+        .orb-1 { width: 400px; height: 400px; background: var(--accent-1); top: -100px; left: -100px; }
+        .orb-2 { width: 480px; height: 480px; background: var(--accent-2); bottom: -160px; right: -160px; animation-delay: -8s; }
+        .orb-3 { width: 300px; height: 300px; background: var(--accent-4); top: 45%; right: 15%; animation-delay: -16s; opacity: 0.22; }
         
-        ::-webkit-scrollbar { width: 6px; height: 6px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
-        ::-webkit-scrollbar-thumb:hover { background: #475569; }
-
-        .loader {
-            width: 32px; height: 32px;
-            border: 3px solid rgba(59, 130, 246, 0.2);
-            border-top: 3px solid #3b82f6;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            33%      { transform: translate(50px, -70px) scale(1.12); }
+            66%      { transform: translate(-60px, 50px) scale(0.94); }
         }
-        @keyframes spin { to { transform: rotate(360deg); } }
 
-        #sidebar { transform: translateX(-100%); }
-        #sidebar.open { transform: translateX(0); }
-        @media (min-width: 1024px) {
-            #sidebar { transform: translateX(0); }
-            .main-content { margin-left: 250px; }
-            #sidebarOverlay { display: none !important; }
+        .bg-grid {
+            position: fixed; inset: 0; z-index: 1;
+            pointer-events: none;
+            background-image:
+                linear-gradient(rgba(59, 130, 246, 0.045) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(59, 130, 246, 0.045) 1px, transparent 1px);
+            background-size: 44px 44px;
+            mask-image: radial-gradient(ellipse at center, black 25%, transparent 75%);
+            -webkit-mask-image: radial-gradient(ellipse at center, black 25%, transparent 75%);
         }
+
+        main, #loadingScreen, .navbar-fixed { position: relative; z-index: 2; }
+
+        .gradient-text {
+            background: linear-gradient(90deg, var(--accent-1), var(--accent-2), var(--accent-3), var(--accent-4), var(--accent-1));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            background-clip: text; background-size: 300% auto;
+            animation: shine 6s linear infinite;
+        }
+        @keyframes shine { to { background-position: 300% center; } }
+
+        .navbar-fixed {
+            background: rgba(6, 9, 20, 0.78);
+            backdrop-filter: blur(22px) saturate(180%);
+            -webkit-backdrop-filter: blur(22px) saturate(180%);
+            border-bottom: 1px solid var(--border-main);
+            box-shadow: 0 8px 32px -12px rgba(0,0,0,0.6);
+        }
+
+        .status-pill {
+            display: inline-flex; align-items: center; gap: 6px;
+            padding: 6px 14px; border-radius: 999px;
+            background: rgba(34, 197, 94, 0.12);
+            color: var(--status-online);
+            border: 1px solid rgba(34, 197, 94, 0.28);
+            font-size: 12px; font-weight: 600;
+            font-family: 'Space Grotesk', sans-serif;
+            box-shadow: 0 0 20px -6px rgba(34, 197, 94, 0.5);
+        }
+        .blink { animation: blink 2s infinite; }
+        @keyframes blink { 0%,100% { opacity: 1; } 50% { opacity: 0.55; } }
+
+        .hero-title {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 30px;
+            font-weight: 800;
+            letter-spacing: -1px;
+            line-height: 1.1;
+        }
+        @media (min-width: 768px) { .hero-title { font-size: 40px; } }
+
+        .hero-icon {
+            width: 48px; height: 48px;
+            border-radius: 15px;
+            background: linear-gradient(135deg, var(--accent-1), var(--accent-2));
+            display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 16px 40px -12px rgba(168,85,247,0.7), 0 10px 24px -10px rgba(59,130,246,0.6);
+            position: relative;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+
+        input#searchInput {
+            width: 100%;
+            padding: 14px 16px 14px 48px;
+            font-size: 14px;
+            border: 1px solid var(--border-main);
+            border-radius: 14px;
+            background: rgba(13, 20, 37, 0.85);
+            color: var(--text-main);
+            font-family: 'Inter', sans-serif;
+            transition: all 0.3s ease;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.3);
+        }
+        input#searchInput::placeholder { color: var(--text-dim); }
+        input#searchInput:focus {
+            outline: none;
+            border-color: rgba(59, 130, 246, 0.6);
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.12), inset 0 1px 3px rgba(0,0,0,0.3);
+            background: rgba(17, 26, 46, 0.95);
+        }
+
+        .big-thumb {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 16 / 9;
+            border-radius: 28px;
+            overflow: hidden;
+            background: #000814;
+            margin-bottom: 28px;
+            box-shadow: 0 40px 80px -30px rgba(59, 130, 246, 0.55), 0 0 0 1px rgba(148, 163, 184, 0.12);
+            animation: fadeUp 0.8s ease;
+        }
+        .big-thumb img {
+            width: 100%; height: 100%;
+            object-fit: cover;
+            display: block;
+            transition: transform 10s ease;
+        }
+        .big-thumb:hover img { transform: scale(1.06); }
+        .big-thumb-overlay {
+            position: absolute; inset: 0;
+            background: linear-gradient(180deg, rgba(6,9,20,0.1) 40%, rgba(6,9,20,0.8) 100%);
+            display: flex;
+            align-items: flex-end;
+            padding: 20px 24px;
+            pointer-events: none;
+        }
+        .big-thumb-label {
+            display: inline-flex; align-items: center; gap: 8px;
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 11px; font-weight: 700;
+            letter-spacing: 1.6px; text-transform: uppercase;
+            color: #fff; padding: 7px 14px;
+            border-radius: 999px;
+            background: rgba(6, 9, 20, 0.7);
+            border: 1px solid rgba(148, 163, 184, 0.25);
+            backdrop-filter: blur(10px);
+        }
+
+        .menu-btn {
+            width: 40px; height: 40px;
+            border-radius: 12px;
+            display: flex; align-items: center; justify-content: center;
+            background: rgba(59, 130, 246, 0.1);
+            border: 1px solid rgba(59, 130, 246, 0.25);
+            color: var(--accent-3);
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            flex-shrink: 0;
+        }
+        .menu-btn:hover {
+            background: rgba(59, 130, 246, 0.2);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 24px -10px rgba(59,130,246,0.7);
+        }
+
+        #dropdownPanel {
+            position: fixed;
+            top: 0; right: 0; bottom: 0;
+            width: 100%;
+            max-width: 420px;
+            background: rgba(10, 16, 32, 0.98);
+            backdrop-filter: blur(24px);
+            border-left: 1px solid var(--border-main);
+            box-shadow: -20px 0 60px -20px rgba(0,0,0,0.9);
+            z-index: 9999;
+            transform: translateX(100%);
+            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            flex-direction: column;
+        }
+        #dropdownPanel.open {
+            transform: translateX(0);
+        }
+        .panel-header {
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border-main);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(17, 26, 46, 0.95);
+        }
+        .panel-content {
+            padding: 20px;
+            overflow-y: auto;
+            flex: 1;
+        }
+        
+        .category-item {
+            background: rgba(17, 26, 46, 0.6);
+            border: 1px solid var(--border-main);
+            border-radius: 12px;
+            padding: 14px 16px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .category-item:hover {
+            background: rgba(59, 130, 246, 0.15);
+            border-color: rgba(59, 130, 246, 0.5);
+        }
+        .category-item .cat-name {
+            font-weight: 600;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .detail-view { display: none; }
+        .detail-view.active { display: block; animation: fadeUp 0.3s ease; }
+        .list-view.hidden-view { display: none; }
+
+        .api-card {
+            background: rgba(17, 26, 46, 0.8);
+            border: 1px solid var(--border-main);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 12px;
+        }
+        .param-input {
+            width: 100%; padding: 10px 12px;
+            border: 1px solid var(--border-main);
+            border-radius: 8px;
+            background: rgba(4, 7, 15, 0.8);
+            color: var(--text-main);
+            font-size: 12px; font-family: 'monospace';
+        }
+        .param-input:focus { outline: none; border-color: var(--accent-2); }
+
+        .btn-exec {
+            background: linear-gradient(135deg, var(--accent-2), var(--accent-1));
+            color: white; padding: 10px 20px;
+            border-radius: 8px; font-weight: 600; font-size: 13px;
+            transition: all 0.2s; cursor: pointer; border: none;
+            width: 100%; margin-top: 12px;
+        }
+        .btn-exec:hover { opacity: 0.9; transform: translateY(-1px); }
+
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(10px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        body::-webkit-scrollbar { width: 8px; }
+        body::-webkit-scrollbar-track { background: var(--bg-main); }
+        body::-webkit-scrollbar-thumb { background: linear-gradient(var(--accent-1), var(--accent-2)); border-radius: 4px; }
     </style>
 </head>
-<body class="antialiased min-h-screen flex">
 
-    <div id="loadingScreen" class="fixed inset-0 z-[9999] bg-[#0f172a] flex items-center justify-center transition-opacity duration-500">
+<body class="antialiased min-h-screen">
+
+    <div class="bg-orbs">
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+        <div class="orb orb-3"></div>
+    </div>
+    <div class="bg-grid"></div>
+
+    <div id="loadingScreen" class="fixed inset-0 z-50 bg-[#04070f] flex items-center justify-center transition-opacity duration-500">
         <div class="text-center">
             <div class="loader mx-auto mb-4"></div>
-            <p class="text-slate-400 text-sm animate-pulse">Memuat CHISA • API...</p>
+            <p class="text-slate-400 text-sm">Loading ...</p>
         </div>
     </div>
 
-    <div id="sidebarOverlay" class="fixed inset-0 bg-black/50 z-40 hidden backdrop-blur-sm"></div>
+    <div class="navbar-fixed fixed top-0 left-0 right-0 z-40">
+        <div class="max-w-3xl mx-auto px-4">
+            <div class="flex items-center justify-between h-14 gap-3">
+                <span class="status-pill blink">
+                    <i class="fas fa-circle text-[6px]"></i>
+                    <span>Online</span>
+                </span>
 
-    <aside id="sidebar" class="sidebar fixed top-0 left-0 h-full w-[250px] z-50 flex flex-col shadow-2xl">
-        <div class="h-16 flex items-center px-6 border-b border-slate-700/50">
-            <span class="text-xl font-bold text-slate-300 font-display">BOTCAHX</span>
-        </div>
+                <div class="flex items-center gap-2 relative">
+                    <a id="contactLink" href="https://wa.me/6285715989482" target="_blank" class="text-[12.5px] flex items-center gap-2 px-3 py-1.5 rounded-full font-semibold transition-all duration-200" style="color: var(--text-muted); background: rgba(34,197,94,0.08); border: 1px solid rgba(34,197,94,0.22); font-family: 'Space Grotesk', sans-serif;">
+                        <i class="fab fa-whatsapp" style="color: var(--status-online); font-size: 13px;"></i>
+                        <span class="hidden sm:inline">Information</span>
+                    </a>
 
-        <div class="flex-1 overflow-y-auto py-4 px-3 space-y-6">
-            <div>
-                <p class="px-3 text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-2">Pages</p>
-                <nav class="space-y-1">
-                    <a href="/" class="flex items-center gap-3 px-3 py-2 text-sm text-slate-400 hover:text-white hover:bg-slate-800 rounded-lg transition-colors">
-                        <i class="fas fa-th-large w-5 text-center"></i> All Feature
-                    </a>
-                    <a href="#" class="flex items-center gap-3 px-3 py-2 text-sm text-slate-400 hover:text-white hover:bg-slate-800 rounded-lg transition-colors">
-                        <i class="fas fa-code-branch w-5 text-center"></i> Changelog
-                    </a>
-                    <a href="#" class="flex items-center gap-3 px-3 py-2 text-sm text-slate-400 hover:text-white hover:bg-slate-800 rounded-lg transition-colors">
-                        <i class="fas fa-layer-group w-5 text-center"></i> Dashboard
-                    </a>
-                    <a href="#" class="flex items-center gap-3 px-3 py-2 text-sm text-slate-400 hover:text-white hover:bg-slate-800 rounded-lg transition-colors">
-                        <i class="fas fa-hand-holding-usd w-5 text-center"></i> Donasi
-                    </a>
-                </nav>
-            </div>
-
-            <div>
-                <p class="px-3 text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-2">API Feature</p>
-                <nav class="space-y-1">
-                    <a href="#" class="flex items-center gap-3 px-3 py-2 text-sm text-white bg-slate-800/80 border-l-2 border-blue-500 rounded-r-lg transition-colors">
-                        <i class="fas fa-book w-5 text-center text-blue-400"></i> <span class="font-medium">Asupan API</span>
-                    </a>
-                    <a href="#" class="flex items-center gap-3 px-3 py-2 text-sm text-slate-400 hover:text-white hover:bg-slate-800 rounded-lg transition-colors">
-                        <i class="fas fa-download w-5 text-center"></i> Download
-                    </a>
-                    <a href="#" class="flex items-center gap-3 px-3 py-2 text-sm text-slate-400 hover:text-white hover:bg-slate-800 rounded-lg transition-colors">
-                        <i class="fas fa-smile w-5 text-center"></i> Emoji
-                    </a>
-                    <a href="#" class="flex items-center gap-3 px-3 py-2 text-sm text-slate-400 hover:text-white hover:bg-slate-800 rounded-lg transition-colors">
-                        <i class="fas fa-gamepad w-5 text-center"></i> Game
-                    </a>
-                </nav>
+                    <button id="menuBtn" class="menu-btn" aria-label="Open menu">
+                        <i class="fas fa-ellipsis-v"></i>
+                    </button>
+                </div>
             </div>
         </div>
+    </div>
 
-        <div class="p-4 border-t border-slate-700/50 bg-[#0f172a]">
-            <div class="text-[11px] text-slate-400 flex flex-col gap-1">
-                <div class="flex justify-between items-center"><span><i class="fas fa-battery-half w-4"></i> Baterai</span> <span id="batSidebar" class="text-slate-200">-</span></div>
-                <div class="flex justify-between items-center"><span><i class="fas fa-wifi w-4"></i> Jaringan</span> <span id="netSidebar" class="text-slate-200">-</span></div>
+    <main class="max-w-3xl mx-auto px-6 sm:px-8 py-16 relative">
+        <div class="h-10"></div>
+
+        <div class="text-left mb-6">
+            <div class="flex items-center gap-3 mb-3">
+                <div class="hero-icon">
+                    <i class="fas fa-code text-white text-lg"></i>
+                </div>
+                <h1 id="titleApi" class="hero-title gradient-text">CHISA • API</h1>
             </div>
+            <p id="descApi" class="text-slate-400 text-[13.5px] leading-relaxed max-w-xl">
+                Welcome to CHISA • API documentation. Explore and test our complete collection of API endpoints.
+            </p>
         </div>
-    </aside>
 
-    <main class="main-content flex-1 flex flex-col min-h-screen w-full relative">
-        
-        <header class="h-16 bg-[#1e293b] border-b border-slate-700/50 flex items-center justify-between px-4 sm:px-6 sticky top-0 z-30">
-            <div class="flex items-center gap-4">
-                <button id="menuBtnMobile" class="text-slate-400 hover:text-white lg:hidden">
-                    <i class="fas fa-bars text-lg"></i>
-                </button>
-                <h1 class="text-sm font-semibold text-slate-300 hidden sm:block">Documentation / <span class="text-white">Asupan API</span></h1>
-            </div>
-            
-            <div class="flex items-center gap-4">
-                <div class="hidden md:flex items-center gap-3 px-3 py-1.5 bg-slate-800 rounded-full border border-slate-700 text-xs text-slate-300">
-                    <span title="Baterai"><i class="fas fa-battery-full text-green-400"></i> <span id="batTop">-</span></span>
-                    <span class="w-px h-3 bg-slate-600"></span>
-                    <span title="Network"><i class="fas fa-signal text-blue-400"></i> <span id="netTop">-</span></span>
-                    <span class="w-px h-3 bg-slate-600"></span>
-                    <span title="Penyimpanan"><i class="fas fa-database text-pink-400"></i> <span id="storageTop">-</span></span>
+        <div class="mb-5">
+            <div class="relative">
+                <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                    <span class="material-icons text-slate-500 text-lg">search</span>
                 </div>
-
-                <a href="https://wa.me/6285715989482" target="_blank" class="text-slate-400 hover:text-green-400 transition-colors">
-                    <i class="fab fa-whatsapp text-xl"></i>
-                </a>
-            </div>
-        </header>
-
-        <div class="p-4 sm:p-6 flex-1">
-            <div class="max-w-6xl mx-auto">
-                
-                <div class="mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                    <div>
-                        <h2 id="titleApi" class="text-2xl font-bold text-white font-display">CHISA • API</h2>
-                        <p id="descApi" class="text-sm text-slate-400 mt-1">Interactive API documentation with real-time testing</p>
-                    </div>
-                    
-                    <div class="relative w-full sm:w-72">
-                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                            <i class="fas fa-search text-slate-500 text-sm"></i>
-                        </div>
-                        <input type="text" id="searchInput" placeholder="Cari endpoint..." class="w-full pl-9 pr-4 py-2 bg-[#1e293b] border border-slate-700 text-sm rounded-lg focus:outline-none focus:border-blue-500 text-slate-200 transition-colors">
-                    </div>
-                </div>
-
-                <div class="hidden">
-                    <span id="totalApis">0</span>
-                    <span id="totalCategories">0</span>
-                    <span id="batteryLevel">0</span>
-                    <span id="batteryDetail">0</span>
-                    <span id="networkType">0</span>
-                    <span id="quotaInfo">0</span>
-                </div>
-
-                <div id="content" class="w-full">
-                    <div id="noResults" class="hidden text-center py-12">
-                        <i class="fas fa-search text-4xl text-slate-600 mb-3"></i>
-                        <p class="text-slate-400">Endpoint tidak ditemukan.</p>
-                    </div>
-                    
-                    <div id="apiList" class="w-full">
-                    </div>
-                </div>
-
+                <input type="text" id="searchInput" placeholder="Search API endpoints...">
             </div>
         </div>
 
-        <footer class="mt-auto py-4 text-center border-t border-slate-800">
-            <p id="footer" class="text-xs text-slate-500">© 2025 CHISA • API</p>
+        <div class="big-thumb">
+            <img src="https://media.giphy.com/media/qgQUggAC3Pfv687qPC/giphy.gif" alt="Coding Computer">
+            <div class="big-thumb-overlay">
+                <span class="big-thumb-label">
+                    <i class="fas fa-bolt"></i>
+                    <span>CHISA • API</span>
+                </span>
+            </div>
+        </div>
+
+        <div class="text-center py-8 text-slate-500 text-[13px]" style="font-family: 'Space Grotesk', sans-serif;">
+            <i class="fas fa-hand-pointer mr-2"></i>
+            Klik menu <i class="fas fa-ellipsis-v mx-1"></i> di pojok kanan atas untuk melihat API endpoints
+        </div>
+
+        <footer class="mt-8 pt-6" style="border-top: 1px solid var(--border-main);">
+            <p id="footer" class="text-slate-400 text-[13.5px] text-center mx-auto" style="font-family: 'Space Grotesk', sans-serif;">
+                © 2025 <span class="gradient-text font-bold">CHISA • API</span>
+            </p>
         </footer>
 
     </main>
 
+    <div id="dropdownPanel">
+        <div class="panel-header">
+            <div class="flex items-center gap-3">
+                <button id="backBtn" class="hidden text-slate-400 hover:text-white transition-colors" onclick="showListView()">
+                    <i class="fas fa-arrow-left"></i>
+                </button>
+                <h2 class="font-bold text-white font-display" id="panelTitle">API Categories</h2>
+            </div>
+            <button id="closeBtn" class="text-slate-400 hover:text-red-400 transition-colors w-8 h-8 flex items-center justify-center rounded-lg hover:bg-slate-800">
+                <i class="fas fa-times text-lg"></i>
+            </button>
+        </div>
+        
+        <div class="panel-content">
+            <div id="listView" class="list-view">
+                <div id="categoryListContainer" class="space-y-2">
+                </div>
+            </div>
+
+            <div id="detailView" class="detail-view">
+                <div id="detailContent">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="hidden">
+        <span id="totalApis">0</span>
+        <span id="totalCategories">0</span>
+        <span id="batteryLevel">0</span>
+        <span id="batteryDetail">0</span>
+        <span id="networkType">0</span>
+        <span id="quotaInfo">0</span>
+        <div id="apiList"></div>
+        <div id="noResults"></div>
+    </div>
+
     <script>
-        document.getElementById('menuBtnMobile').addEventListener('click', function() {
-            document.getElementById('sidebar').classList.add('open');
-            document.getElementById('sidebarOverlay').classList.remove('hidden');
-        });
-        document.getElementById('sidebarOverlay').addEventListener('click', function() {
-            document.getElementById('sidebar').classList.remove('open');
-            document.getElementById('sidebarOverlay').classList.add('hidden');
-        });
+        const overlay = document.createElement('div');
+        overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.6);backdrop-filter:blur(4px);z-index:9998;opacity:0;pointer-events:none;transition:opacity 0.3s;';
+        document.body.appendChild(overlay);
 
-        function updateDeviceInfo() {
-            if ('getBattery' in navigator) {
-                navigator.getBattery().then(function(battery) {
-                    const level = Math.round(battery.level * 100);
-                    const status = level + '%' + (battery.charging ? ' ⚡' : '');
-                    
-                    if(document.getElementById('batSidebar')) document.getElementById('batSidebar').textContent = status;
-                    if(document.getElementById('batTop')) document.getElementById('batTop').textContent = status;
-                    if(document.getElementById('batteryDetail')) document.getElementById('batteryDetail').textContent = status;
-                });
+        const menuBtn = document.getElementById('menuBtn');
+        const panel = document.getElementById('dropdownPanel');
+        const closeBtn = document.getElementById('closeBtn');
+
+        function openPanel() {
+            panel.classList.add('open');
+            overlay.style.opacity = '1';
+            overlay.style.pointerEvents = 'auto';
+            renderCategories();
+        }
+
+        function closePanel() {
+            panel.classList.remove('open');
+            overlay.style.opacity = '0';
+            overlay.style.pointerEvents = 'none';
+            setTimeout(showListView, 300);
+        }
+
+        menuBtn.addEventListener('click', openPanel);
+        closeBtn.addEventListener('click', closePanel);
+        overlay.addEventListener('click', closePanel);
+
+        function renderCategories() {
+            const container = document.getElementById('categoryListContainer');
+            container.innerHTML = '';
+            
+            if (typeof settings === 'undefined' || !settings.categories || settings.categories.length === 0) {
+                container.innerHTML = '<p class="text-slate-400 text-sm text-center py-4">Belum ada data API.</p>';
+                return;
             }
 
-            if (navigator.connection) {
-                const type = navigator.connection.effectiveType || 'Unknown';
-                const dl = navigator.connection.downlink ? navigator.connection.downlink + ' Mbps' : '';
-                if(document.getElementById('netSidebar')) document.getElementById('netSidebar').textContent = type.toUpperCase();
-                if(document.getElementById('netTop')) document.getElementById('netTop').textContent = type.toUpperCase();
-                if(document.getElementById('networkType')) document.getElementById('networkType').textContent = type + ' ' + dl;
-            }
+            settings.categories.forEach((cat, index) => {
+                const div = document.createElement('div');
+                div.className = 'category-item';
+                div.onclick = () => showCategoryDetail(index);
+                
+                let icon = 'folder';
+                if(typeof categoryIcons !== 'undefined' && categoryIcons[cat.name]) {
+                    icon = categoryIcons[cat.name];
+                }
 
-            if (navigator.storage && navigator.storage.estimate) {
-                navigator.storage.estimate().then(function(estimate) {
-                    const quota = estimate.quota || 0;
-                    const used = estimate.usage || 0;
-                    const freeMB = ((quota - used) / (1024 * 1024)).toFixed(0);
-                    if(document.getElementById('storageTop')) document.getElementById('storageTop').textContent = freeMB + ' MB';
-                    if(document.getElementById('quotaInfo')) document.getElementById('quotaInfo').textContent = freeMB + ' MB';
+                div.innerHTML = `
+                    <div class="cat-name">
+                        <span class="material-icons text-blue-400 text-lg">${icon}</span>
+                        ${cat.name}
+                    </div>
+                    <span class="text-xs bg-slate-800 text-slate-300 px-2 py-0.5 rounded-full">${cat.items.length}</span>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        function showCategoryDetail(catIndex) {
+            const cat = settings.categories[catIndex];
+            if(!cat) return;
+
+            document.getElementById('listView').classList.add('hidden-view');
+            document.getElementById('detailView').classList.add('active');
+            document.getElementById('backBtn').classList.remove('hidden');
+            document.getElementById('panelTitle').textContent = cat.name;
+
+            const container = document.getElementById('detailContent');
+            container.innerHTML = '';
+
+            cat.items.forEach((item, i) => {
+                const card = document.createElement('div');
+                card.className = 'api-card';
+                
+                let formHtml = '';
+                const queryString = item.path.split('?')[1];
+                if (queryString) {
+                    const params = new URLSearchParams(queryString);
+                    for (const [key, val] of params) {
+                        if (val === '' || val === 'YOUR_API_KEY' || key === 'apikey') {
+                            formHtml += `
+                                <div class="mb-3">
+                                    <label class="block text-[11px] font-medium text-slate-400 mb-1">${key}</label>
+                                    <input type="text" class="param-input" id="param-${catIndex}-${i}-${key}" placeholder="Masukkan ${key}...">
+                                </div>
+                            `;
+                        }
+                    }
+                }
+
+                card.innerHTML = `
+                    <div class="flex items-center justify-between mb-2">
+                        <h3 class="font-bold text-sm text-white">${item.name}</h3>
+                        <span class="text-[10px] font-bold px-2 py-0.5 rounded border border-blue-500/50 text-blue-400 bg-blue-500/10">${item.method || 'GET'}</span>
+                    </div>
+                    <p class="text-xs text-slate-400 mb-3">${item.desc}</p>
+                    <div class="bg-[#04070f] p-2 rounded border border-gray-800 mb-3 overflow-x-auto">
+                        <code class="text-[11px] text-green-400 whitespace-nowrap" id="url-display-${catIndex}-${i}">${item.path}</code>
+                    </div>
+                    <div id="form-area-${catIndex}-${i}">
+                        ${formHtml}
+                    </div>
+                    <button class="btn-exec" onclick="execApi(${catIndex}, ${i})">
+                        <i class="fas fa-play mr-1"></i> Test Endpoint
+                    </button>
+                    <div id="response-area-${catIndex}-${i}" class="mt-3 hidden">
+                        <div class="bg-[#04070f] p-3 rounded border border-gray-800 text-xs font-mono text-slate-300 max-h-40 overflow-auto" id="response-content-${catIndex}-${i}"></div>
+                    </div>
+                `;
+                container.appendChild(card);
+
+                if(formHtml) {
+                    const inputs = card.querySelectorAll('.param-input');
+                    inputs.forEach(input => {
+                        input.addEventListener('input', () => {
+                            updateMiniUrl(catIndex, i, item.path);
+                        });
+                    });
+                }
+            });
+        }
+
+        function showListView() {
+            document.getElementById('listView').classList.remove('hidden-view');
+            document.getElementById('detailView').classList.remove('active');
+            document.getElementById('backBtn').classList.add('hidden');
+            document.getElementById('panelTitle').textContent = 'API Categories';
+        }
+
+        function updateMiniUrl(catIndex, i, basePath) {
+            const base = basePath.split('?')[0];
+            const inputs = document.querySelectorAll(`#form-area-${catIndex}-${i} .param-input`);
+            const urlParams = new URLSearchParams();
+            inputs.forEach(input => {
+                if(input.value.trim()) {
+                    const key = input.id.split('-').pop();
+                    urlParams.set(key, input.value.trim());
+                }
+            });
+            const finalUrl = base + (urlParams.toString() ? '?' + urlParams.toString() : '');
+            document.getElementById(`url-display-${catIndex}-${i}`).textContent = finalUrl;
+        }
+
+        async function execApi(catIndex, i) {
+            const item = settings.categories[catIndex].items[i];
+            const respArea = document.getElementById(`response-area-${catIndex}-${i}`);
+            const respContent = document.getElementById(`response-content-${catIndex}-${i}`);
+            const urlDisplay = document.getElementById(`url-display-${catIndex}-${i}`).textContent;
+
+            respArea.classList.remove('hidden');
+            respContent.innerHTML = '<span class="text-blue-400 animate-pulse">Fetching data...</span>';
+
+            try {
+                const res = await fetch(urlDisplay, {
+                    method: item.method || 'GET',
+                    headers: { 'Accept': '*/*' }
                 });
+
+                if(!res.ok) throw new Error(`HTTP ${res.status}`);
+
+                const contentType = res.headers.get('content-type') || '';
+                
+                if(contentType.includes('application/json')) {
+                    const json = await res.json();
+                    respContent.textContent = JSON.stringify(json, null, 2);
+                } else if (contentType.startsWith('image/')) {
+                    const blob = await res.blob();
+                    const objUrl = URL.createObjectURL(blob);
+                    respContent.innerHTML = `<img src="${objUrl}" class="w-full rounded">`;
+                } else {
+                    const text = await res.text();
+                    respContent.textContent = text;
+                }
+            } catch (err) {
+                respContent.innerHTML = `<span class="text-red-400">Error: ${err.message}</span>`;
             }
         }
 
+        function updateDeviceInfo() {
+            if ('getBattery' in navigator) {
+                navigator.getBattery().then(function (battery) {
+                    const level = Math.round(battery.level * 100) + '%';
+                    document.getElementById('batteryLevel').textContent = level;
+                });
+            }
+        }
         document.addEventListener('DOMContentLoaded', () => {
             updateDeviceInfo();
-            setInterval(updateDeviceInfo, 30000);
-            document.querySelectorAll('#sidebar nav a').forEach(link => {
-                link.addEventListener('click', () => {
-                    if(window.innerWidth < 1024) {
-                        document.getElementById('sidebar').classList.remove('open');
-                        document.getElementById('sidebarOverlay').classList.add('hidden');
-                    }
-                });
-            });
+            const ls = document.getElementById('loadingScreen');
+            if(ls) {
+                ls.style.opacity = '0';
+                setTimeout(() => ls.remove(), 500);
+            }
         });
     </script>
 
-    <script src="/script.js"></script>
+    <script src="script.js"></script>
 
 </body>
 </html>

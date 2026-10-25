@@ -5,12 +5,13 @@ const categoryIcons = {
     'Downloader': 'folder',
     'Imagecreator': 'image',
     'Openai': 'smart_toy',
+    'AI': 'psychology',
+    'AI Tools': 'psychology',
     'Random': 'shuffle',
     'Search': 'search',
     'Stalker': 'visibility',
     'Tools': 'build',
-    'Orderkuota': 'paid',
-    'AI Tools': 'psychology'
+    'Orderkuota': 'paid'
 };
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -57,20 +58,34 @@ function getDefaultSettings() {
 }
 
 function getDefaultCategories() {
-    return [];
+    return [
+        {
+            name: "Asupan API",
+            items: [
+                { name: "Asupan Anony", path: "/asupan/anony?apikey=", method: "GET", desc: "Random video asupan anony" },
+                { name: "Asupan Bocil", path: "/asupan/bocil?apikey=", method: "GET", desc: "Random video asupan bocil" }
+            ]
+        }
+    ];
 }
 
 function setupUI() {
     if(settings.links) {
-        document.getElementById("contactLink").href = `${settings.links}`;
+        const contactLink = document.getElementById("contactLink");
+        if(contactLink) contactLink.href = `${settings.links}`;
     }
-    if(document.getElementById("titleApi")) document.getElementById("titleApi").textContent = settings.name;
-    if(document.getElementById("descApi")) document.getElementById("descApi").textContent = settings.description;
-    if(document.getElementById("footer")) document.getElementById("footer").textContent = `© 2025 ${settings.creator} - ${settings.name}`;
+    const titleApi = document.getElementById("titleApi");
+    const descApi = document.getElementById("descApi");
+    const footer = document.getElementById("footer");
+    
+    if(titleApi) titleApi.textContent = settings.name;
+    if(descApi) descApi.textContent = settings.description;
+    if(footer) footer.textContent = `© 2025 ${settings.creator} - ${settings.name}`;
 }
 
 async function loadAPIData() {
     const apiList = document.getElementById('apiList');
+    if (!apiList) return;
     
     if (!settings.categories || settings.categories.length === 0) {
         settings.categories = getDefaultCategories();
@@ -86,26 +101,26 @@ async function loadAPIData() {
         const icon = categoryIcons[category.name] || 'folder';
         
         html += `
-        <div class="category-group" data-category="${category.name.toLowerCase()}">
-            <div class="mb-3 flex items-center gap-2 border-b border-gray-700 pb-2">
+        <div class="category-group mb-8" data-category="${category.name.toLowerCase()}">
+            <div class="mb-3 flex items-center gap-2 border-b border-slate-700 pb-2">
                 <span class="material-icons text-lg text-blue-400">${icon}</span>
-                <h2 class="font-bold text-sm text-gray-200 uppercase tracking-wider">${category.name}</h2>
-                <span class="ml-auto text-xs bg-gray-800 text-gray-400 px-2 py-0.5 rounded-full">${category.items.length} Endpoints</span>
+                <h2 class="font-bold text-sm text-white uppercase tracking-wider">${category.name}</h2>
+                <span class="ml-auto text-xs bg-slate-800 text-slate-300 px-2 py-0.5 rounded-full">${category.items.length} Endpoints</span>
             </div>
             
-            <div class="bg-[#0d1425] border border-gray-800 rounded-xl overflow-hidden shadow-lg">
+            <div class="bg-[#1e293b] border border-slate-700 rounded-xl overflow-hidden shadow-lg">
                 <div class="overflow-x-auto">
                     <table class="w-full text-left border-collapse">
-                        <thead class="bg-[#111a2e] border-b border-gray-700">
+                        <thead class="bg-[#0f172a] border-b border-slate-700">
                             <tr>
-                                <th class="py-3 px-4 text-xs font-semibold text-gray-400 uppercase">Name</th>
-                                <th class="py-3 px-4 text-xs font-semibold text-gray-400 uppercase hidden sm:table-cell">Parameter</th>
-                                <th class="py-3 px-4 text-xs font-semibold text-gray-400 uppercase">Method</th>
-                                <th class="py-3 px-4 text-xs font-semibold text-gray-400 uppercase">Status</th>
-                                <th class="py-3 px-4 text-xs font-semibold text-gray-400 uppercase text-center">Try</th>
+                                <th class="py-3 px-4 text-xs font-semibold text-slate-400 uppercase">Name</th>
+                                <th class="py-3 px-4 text-xs font-semibold text-slate-400 uppercase hidden sm:table-cell">Parameter</th>
+                                <th class="py-3 px-4 text-xs font-semibold text-slate-400 uppercase">Method</th>
+                                <th class="py-3 px-4 text-xs font-semibold text-slate-400 uppercase">Status</th>
+                                <th class="py-3 px-4 text-xs font-semibold text-slate-400 uppercase text-center">Try</th>
                             </tr>
                         </thead>
-                        <tbody class="divide-y divide-gray-800/50">`;
+                        <tbody class="divide-y divide-slate-700/50">`;
         
         category.items.forEach((item, endpointIndex) => {
             const method = item.method || 'GET';
@@ -124,7 +139,7 @@ async function loadAPIData() {
             const methodColor = method === 'GET' ? 'text-blue-400 border-blue-400' : 'text-green-400 border-green-400';
 
             html += `
-                <tr class="api-item hover:bg-gray-800/50 transition-colors"
+                <tr class="api-item hover:bg-slate-800/50 transition-colors"
                     data-method="${method.toLowerCase()}"
                     data-path="${path}"
                     data-alias="${item.name}"
@@ -132,12 +147,12 @@ async function loadAPIData() {
                     data-category="${category.name.toLowerCase()}">
                     
                     <td class="py-3 px-4">
-                        <div class="font-medium text-sm text-gray-200">${item.name}</div>
-                        <div class="text-[11px] text-gray-500 font-mono truncate max-w-[150px] sm:max-w-[250px]" title="${path}">${path}</div>
+                        <div class="font-medium text-sm text-slate-200">${item.name}</div>
+                        <div class="text-[11px] text-slate-500 font-mono truncate max-w-[150px] sm:max-w-[250px]" title="${path}">${path}</div>
                     </td>
                     
                     <td class="py-3 px-4 hidden sm:table-cell">
-                        <span class="text-xs text-gray-400 font-mono bg-gray-900 px-2 py-1 rounded border border-gray-800">${paramText}</span>
+                        <span class="text-xs text-slate-400 font-mono bg-slate-900 px-2 py-1 rounded border border-slate-700">${paramText}</span>
                     </td>
                     
                     <td class="py-3 px-4">
@@ -157,12 +172,12 @@ async function loadAPIData() {
             `;
             
             html += `
-                <tr id="endpoint-row-${catIndex}-${endpointIndex}" class="hidden bg-[#0a0f1b]">
-                    <td colspan="5" class="p-0 border-b border-gray-700">
+                <tr id="endpoint-row-${catIndex}-${endpointIndex}" class="hidden bg-[#0f172a]">
+                    <td colspan="5" class="p-0 border-b border-slate-700">
                         <div class="p-5 border-l-4 border-blue-500">
                             <div class="mb-3">
-                                <div class="text-gray-400 text-xs mb-1">Description:</div>
-                                <div class="text-sm text-gray-200">${item.desc}</div>
+                                <div class="text-slate-400 text-xs mb-1">Description:</div>
+                                <div class="text-sm text-slate-200">${item.desc}</div>
                             </div>
                             
                             <form id="form-${catIndex}-${endpointIndex}">
@@ -170,12 +185,12 @@ async function loadAPIData() {
                                 </div>
                                 
                                 <div class="mb-4">
-                                    <div class="text-gray-400 font-bold text-[11px] mb-2 uppercase tracking-wider">Request URL</div>
+                                    <div class="text-slate-400 font-bold text-[11px] mb-2 uppercase tracking-wider">Request URL</div>
                                     <div class="flex items-center gap-2">
-                                        <div class="flex-1 bg-gray-900 border border-gray-700 rounded px-3 py-2 overflow-x-auto">
+                                        <div class="flex-1 bg-slate-900 border border-slate-700 rounded px-3 py-2 overflow-x-auto">
                                             <code class="text-xs text-blue-300 whitespace-nowrap" id="url-display-${catIndex}-${endpointIndex}">${item.path}</code>
                                         </div>
-                                        <button type="button" onclick="copyUrl(${catIndex}, ${endpointIndex})" class="bg-gray-800 hover:bg-gray-700 border border-gray-600 text-gray-300 p-2 rounded transition-colors" title="Copy URL">
+                                        <button type="button" onclick="copyUrl(${catIndex}, ${endpointIndex})" class="bg-slate-800 hover:bg-slate-700 border border-slate-600 text-slate-300 p-2 rounded transition-colors" title="Copy URL">
                                             <i class="fas fa-copy"></i>
                                         </button>
                                     </div>
@@ -185,28 +200,28 @@ async function loadAPIData() {
                                     <button type="button" onclick="executeRequest(event, ${catIndex}, ${endpointIndex}, '${method}', '${path}', 'application/json')" class="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white font-medium px-5 py-2 text-xs rounded transition-all flex items-center gap-2 shadow-lg shadow-blue-500/20">
                                         <i class="fas fa-bolt"></i> Execute
                                     </button>
-                                    <button type="button" onclick="clearResponse(${catIndex}, ${endpointIndex})" class="bg-gray-800 hover:bg-gray-700 border border-gray-600 text-gray-300 font-medium px-5 py-2 text-xs rounded transition-colors flex items-center gap-2">
+                                    <button type="button" onclick="clearResponse(${catIndex}, ${endpointIndex})" class="bg-slate-800 hover:bg-slate-700 border border-slate-600 text-slate-300 font-medium px-5 py-2 text-xs rounded transition-colors flex items-center gap-2">
                                         <i class="fas fa-eraser"></i> Clear
                                     </button>
                                 </div>
                             </form>
 
                             <div id="response-${catIndex}-${endpointIndex}" class="hidden mt-5">
-                                <div class="text-gray-400 font-bold text-[11px] mb-2 uppercase tracking-wider flex items-center">
+                                <div class="text-slate-400 font-bold text-[11px] mb-2 uppercase tracking-wider flex items-center">
                                     <span class="material-icons text-[14px] mr-1">code</span> Response
                                 </div>
-                                <div class="bg-[#04070f] border border-gray-800 rounded-lg overflow-hidden">
-                                    <div class="px-4 py-2 bg-[#111a2e] border-b border-gray-800 flex items-center justify-between">
+                                <div class="bg-[#04070f] border border-slate-700 rounded-lg overflow-hidden">
+                                    <div class="px-4 py-2 bg-[#1e293b] border-b border-slate-700 flex items-center justify-between">
                                         <div class="flex items-center gap-3">
                                             <span id="response-status-${catIndex}-${endpointIndex}" class="text-[10px] font-bold px-2 py-1 rounded bg-green-500/20 text-green-400">200 OK</span>
-                                            <span id="response-time-${catIndex}-${endpointIndex}" class="text-[10px] text-gray-500">0ms</span>
+                                            <span id="response-time-${catIndex}-${endpointIndex}" class="text-[10px] text-slate-500">0ms</span>
                                         </div>
-                                        <button onclick="copyResponse(${catIndex}, ${endpointIndex})" class="text-gray-400 hover:text-white transition-colors" title="Copy Response">
+                                        <button onclick="copyResponse(${catIndex}, ${endpointIndex})" class="text-slate-400 hover:text-white transition-colors" title="Copy Response">
                                             <i class="fas fa-copy text-xs"></i>
                                         </button>
                                     </div>
                                     <div class="p-0 max-h-[400px] overflow-auto">
-                                        <div class="response-media-container" id="response-content-${catIndex}-${endpointIndex}"></div>
+                                        <div class="response-media-container p-2" id="response-content-${catIndex}-${endpointIndex}"></div>
                                     </div>
                                 </div>
                             </div>
@@ -235,11 +250,13 @@ async function loadAPIData() {
 
 function initializeEndpointParameters(catIndex, endpointIndex, item) {
     const paramsContainer = document.getElementById(`params-container-${catIndex}-${endpointIndex}`);
+    if(!paramsContainer) return;
+    
     const params = extractParameters(item.path);
     
     if (params.length === 0) {
         paramsContainer.innerHTML = `
-            <div class="col-span-full text-xs text-gray-500 italic flex items-center gap-2">
+            <div class="col-span-full text-xs text-slate-500 italic flex items-center gap-2">
                 <i class="fas fa-check-circle text-green-500"></i> No parameters required
             </div>
         `;
@@ -251,14 +268,14 @@ function initializeEndpointParameters(catIndex, endpointIndex, item) {
         const isRequired = param.required;
         paramsHtml += `
             <div>
-                <label class="block text-[11px] font-medium text-gray-400 mb-1">
+                <label class="block text-[11px] font-medium text-slate-400 mb-1">
                     ${param.name} ${isRequired ? '<span class="text-red-400">*</span>' : ''}
-                    <span class="text-gray-600 ml-1">(${param.type})</span>
+                    <span class="text-slate-600 ml-1">(${param.type})</span>
                 </label>
                 <input 
                     type="text" 
                     name="${param.name}" 
-                    class="w-full px-3 py-2 border border-gray-700 rounded-lg text-xs focus:outline-none focus:border-blue-500 bg-[#04070f] text-gray-200 placeholder-gray-600 transition-colors"
+                    class="w-full px-3 py-2 border border-slate-700 rounded-lg text-xs focus:outline-none focus:border-blue-500 bg-[#04070f] text-slate-200 placeholder-slate-600 transition-colors"
                     placeholder="Enter ${param.name}..."
                     ${isRequired ? 'required' : ''}
                     oninput="updateRequestUrl(${catIndex}, ${endpointIndex})"
@@ -278,7 +295,7 @@ function extractParameters(path) {
     
     const urlParams = new URLSearchParams(queryString);
     for (const [key, value] of urlParams) {
-        if (value === '' || value === 'YOUR_API_KEY') {
+        if (value === '' || value === 'YOUR_API_KEY' || key === 'apikey') {
             params.push({
                 name: key,
                 required: true,
@@ -401,6 +418,8 @@ function setupEventListeners() {
 
 function toggleEndpoint(catIndex, endpointIndex) {
     const row = document.getElementById(`endpoint-row-${catIndex}-${endpointIndex}`);
+    if(!row) return;
+    
     if (row.classList.contains('hidden')) {
         document.querySelectorAll('tr[id^="endpoint-row-"]').forEach(r => r.classList.add('hidden'));
         row.classList.remove('hidden');
@@ -439,7 +458,7 @@ function updateRequestUrl(catIndex, endpointIndex) {
 }
 
 async function executeRequest(event, catIndex, endpointIndex, method, path, produces) {
-    event.preventDefault();
+    if(event) event.preventDefault();
     const { url, hasErrors } = updateRequestUrl(catIndex, endpointIndex);
     
     if (hasErrors) {
@@ -452,10 +471,12 @@ async function executeRequest(event, catIndex, endpointIndex, method, path, prod
     const responseStatus = document.getElementById(`response-status-${catIndex}-${endpointIndex}`);
     const responseTime = document.getElementById(`response-time-${catIndex}-${endpointIndex}`);
     
+    if(!responseDiv) return;
+    
     responseDiv.classList.remove('hidden');
-    responseContent.innerHTML = '<div class="flex justify-center p-8"><div class="loader"></div></div>';
+    responseContent.innerHTML = '<div class="flex justify-center p-8"><div class="loader border-t-blue-500 rounded-full w-6 h-6 border-2 animate-spin"></div></div>';
     responseStatus.textContent = 'Loading...';
-    responseStatus.className = 'text-[10px] px-2 py-1 rounded bg-gray-600 text-gray-300';
+    responseStatus.className = 'text-[10px] px-2 py-1 rounded bg-slate-600 text-slate-300';
     responseTime.textContent = '';
     
     const startTime = Date.now();
@@ -478,15 +499,15 @@ async function executeRequest(event, catIndex, endpointIndex, method, path, prod
         if (contentType.startsWith('image/')) {
             const blob = await response.blob();
             const blobUrl = URL.createObjectURL(blob);
-            responseContent.innerHTML = `<img src="${blobUrl}" class="w-full h-auto object-contain p-2 rounded">`;
+            responseContent.innerHTML = `<img src="${blobUrl}" class="w-full h-auto object-contain rounded">`;
         } else if (contentType.includes('audio/')) {
             const blob = await response.blob();
             const blobUrl = URL.createObjectURL(blob);
-            responseContent.innerHTML = `<audio controls autoplay class="w-full p-4"><source src="${blobUrl}" type="${contentType}"></audio>`;
+            responseContent.innerHTML = `<audio controls autoplay class="w-full"><source src="${blobUrl}" type="${contentType}"></audio>`;
         } else if (contentType.includes('video/')) {
             const blob = await response.blob();
             const blobUrl = URL.createObjectURL(blob);
-            responseContent.innerHTML = `<video controls autoplay class="w-full h-full object-contain p-2 rounded"><source src="${blobUrl}" type="${contentType}"></video>`;
+            responseContent.innerHTML = `<video controls autoplay class="w-full h-full object-contain rounded"><source src="${blobUrl}" type="${contentType}"></video>`;
         } else if (contentType.includes('application/json')) {
             const data = await response.json();
             if (data && typeof data === 'object' && data.error) throw new Error(`API Error: ${data.error}`);
@@ -494,7 +515,7 @@ async function executeRequest(event, catIndex, endpointIndex, method, path, prod
             responseContent.innerHTML = `<pre class="text-xs p-4 overflow-x-auto text-blue-300 font-mono leading-relaxed">${escapeHtml(formattedResponse)}</pre>`;
         } else {
             const text = await response.text();
-            responseContent.innerHTML = `<pre class="text-xs p-4 overflow-x-auto text-gray-300 font-mono">${escapeHtml(text)}</pre>`;
+            responseContent.innerHTML = `<pre class="text-xs p-4 overflow-x-auto text-slate-300 font-mono">${escapeHtml(text)}</pre>`;
         }
         
         showToast('Request successful!', 'success');
@@ -506,7 +527,7 @@ async function executeRequest(event, catIndex, endpointIndex, method, path, prod
             <div class="text-center py-8">
                 <i class="fas fa-exclamation-triangle text-2xl text-red-400 mb-3"></i>
                 <div class="text-sm font-medium text-red-400">Error</div>
-                <div class="text-xs text-gray-400 mt-1">${escapeHtml(errorMessage)}</div>
+                <div class="text-xs text-slate-400 mt-1">${escapeHtml(errorMessage)}</div>
             </div>
         `;
         responseStatus.textContent = 'Error';
@@ -519,6 +540,7 @@ async function executeRequest(event, catIndex, endpointIndex, method, path, prod
 function clearResponse(catIndex, endpointIndex) {
     const form = document.getElementById(`form-${catIndex}-${endpointIndex}`);
     const responseDiv = document.getElementById(`response-${catIndex}-${endpointIndex}`);
+    if(!form || !responseDiv) return;
     
     const inputs = form.querySelectorAll('input[type="text"]');
     inputs.forEach(input => {
@@ -533,6 +555,7 @@ function clearResponse(catIndex, endpointIndex) {
 
 function copyUrl(catIndex, endpointIndex) {
     const urlDisplay = document.getElementById(`url-display-${catIndex}-${endpointIndex}`);
+    if(!urlDisplay) return;
     const url = window.location.origin + urlDisplay.textContent;
     navigator.clipboard.writeText(url).then(() => {
         showToast('URL copied!', 'success');
@@ -541,6 +564,7 @@ function copyUrl(catIndex, endpointIndex) {
 
 function copyResponse(catIndex, endpointIndex) {
     const responseContent = document.getElementById(`response-content-${catIndex}-${endpointIndex}`);
+    if(!responseContent) return;
     const text = responseContent.textContent;
     navigator.clipboard.writeText(text).then(() => {
         showToast('Response copied!', 'success');
@@ -548,14 +572,14 @@ function copyResponse(catIndex, endpointIndex) {
 }
 
 function showToast(message, type = 'info') {
-    const existing = document.querySelector('.toast');
+    const existing = document.querySelector('.toast-custom');
     if (existing) existing.remove();
     
     const toast = document.createElement('div');
-    toast.className = 'toast fixed bottom-5 right-5 bg-[#0d1425] border border-gray-700 text-white px-4 py-3 rounded-lg shadow-2xl flex items-center gap-3 z-[9999] transform transition-all duration-300 translate-y-10 opacity-0';
+    toast.className = 'toast-custom fixed bottom-5 right-5 bg-[#1e293b] border border-slate-700 text-white px-4 py-3 rounded-lg shadow-2xl flex items-center gap-3 z-[9999] transform transition-all duration-300 translate-y-10 opacity-0';
     
-    const icon = { 'success': 'fa-check-circle', 'error': 'fa-exclamation-circle', 'info': 'fa-info-circle' }[type];
-    const color = { 'success': '#10b981', 'error': '#ef4444', 'info': '#3b82f6' }[type];
+    const icon = { 'success': 'fa-check-circle', 'error': 'fa-exclamation-circle', 'info': 'fa-info-circle' }[type] || 'fa-info-circle';
+    const color = { 'success': '#10b981', 'error': '#ef4444', 'info': '#3b82f6' }[type] || '#3b82f6';
     
     toast.innerHTML = `<i class="fas ${icon} text-lg" style="color: ${color}"></i><span class="text-sm font-medium">${message}</span>`;
     document.body.appendChild(toast);
@@ -602,7 +626,7 @@ function showErrorMessage(err = undefined) {
     }, 1000);
 }
 
-window.toggleCategory = toggleCategory;
+window.toggleCategory = function() {};
 window.toggleEndpoint = toggleEndpoint;
 window.executeRequest = executeRequest;
 window.clearResponse = clearResponse;
