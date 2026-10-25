@@ -3,16 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="CHISA • API - Explore & test API endpoints.">
-    <meta name="theme-color" content="#060914">
-    <title>CHISA • API</title>
+    <title>CHISA • API - Documentation</title>
     <link rel="icon" href="https://cdn.zass.in/lsXr7NCsX8.jpeg" type="image/jpeg">
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Ubuntu+Mono:ital,wght@0,400;0,700&family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Ubuntu+Mono&family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script>
         tailwind.config = {
             darkMode: 'class',
@@ -22,419 +20,175 @@
                         'mono': ['Ubuntu Mono', 'monospace'],
                         'sans': ['Inter', 'system-ui', 'sans-serif'],
                         'display': ['Space Grotesk', 'sans-serif']
-                    },
-                    fontSize: { 'xxs': ['0.65rem', { lineHeight: '0.9rem' }] }
+                    }
                 }
             }
         }
     </script>
     <style>
-        :root {
-            --bg-main:        #04070f;
-            --bg-card:        #0a1020;
-            --bg-elevated:    #0f172a;
-            --accent-1:       #a855f7;
-            --accent-2:       #3b82f6;
-            --accent-3:       #22d3ee;
-            --accent-4:       #ec4899;
-            --accent-5:       #f59e0b;
-            --text-main:      #f1f5ff;
-            --text-muted:     #94a3b8;
-            --text-dim:       #64748b;
-            --border-main:    rgba(148, 163, 184, 0.12);
-            --border-accent:  #3b82f6;
-            --status-online:  #22c55e;
-            --status-error:   #ef4444;
-        }
-
-        * { -webkit-tap-highlight-color: transparent; }
-        html { scroll-behavior: smooth; }
-
-        body {
-            background: var(--bg-main);
-            color: var(--text-main);
-            font-family: 'Inter', system-ui, sans-serif;
-            overflow-x: hidden;
-            position: relative;
-            min-height: 100vh;
-        }
-
-        body::before {
-            content: '';
-            position: fixed;
-            inset: 0;
-            z-index: 0;
-            pointer-events: none;
-            background:
-                radial-gradient(ellipse 80% 50% at 50% -20%, rgba(168, 85, 247, 0.15), transparent),
-                radial-gradient(ellipse 60% 50% at 80% 100%, rgba(59, 130, 246, 0.12), transparent),
-                radial-gradient(ellipse 50% 40% at 0% 60%, rgba(236, 72, 153, 0.08), transparent);
-        }
-
-        .bg-orbs {
-            position: fixed; inset: 0; z-index: 0;
-            pointer-events: none; overflow: hidden;
-        }
-        .orb {
-            position: absolute; border-radius: 50%;
-            filter: blur(90px); opacity: 0.35;
-            animation: float 24s ease-in-out infinite;
-        }
-        .orb-1 { width: 400px; height: 400px; background: var(--accent-1); top: -100px; left: -100px; }
-        .orb-2 { width: 480px; height: 480px; background: var(--accent-2); bottom: -160px; right: -160px; animation-delay: -8s; }
-        .orb-3 { width: 300px; height: 300px; background: var(--accent-4); top: 45%; right: 15%; animation-delay: -16s; opacity: 0.22; }
+        body { background: #060914; color: #e2e8f0; font-family: 'Inter', sans-serif; overflow-x: hidden; }
+        .bg-orbs { position: fixed; inset: 0; z-index: -1; overflow: hidden; pointer-events: none; }
+        .orb { position: absolute; border-radius: 50%; filter: blur(100px); opacity: 0.3; }
+        .orb-1 { width: 400px; height: 400px; background: #a855f7; top: -100px; left: -100px; }
+        .orb-2 { width: 500px; height: 500px; background: #3b82f6; bottom: -150px; right: -150px; }
         
-        @keyframes float {
-            0%, 100% { transform: translate(0, 0) scale(1); }
-            33%      { transform: translate(50px, -70px) scale(1.12); }
-            66%      { transform: translate(-60px, 50px) scale(0.94); }
-        }
-
-        .bg-grid {
-            position: fixed; inset: 0; z-index: 1;
-            pointer-events: none;
-            background-image:
-                linear-gradient(rgba(59, 130, 246, 0.045) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(59, 130, 246, 0.045) 1px, transparent 1px);
-            background-size: 44px 44px;
-            mask-image: radial-gradient(ellipse at center, black 25%, transparent 75%);
-            -webkit-mask-image: radial-gradient(ellipse at center, black 25%, transparent 75%);
-        }
-
-        main, #loadingScreen, .navbar-fixed { position: relative; z-index: 2; }
-
-        .gradient-text {
-            background: linear-gradient(90deg, var(--accent-1), var(--accent-2), var(--accent-3), var(--accent-4), var(--accent-1));
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-            background-clip: text; background-size: 300% auto;
-            animation: shine 6s linear infinite;
-        }
-        @keyframes shine { to { background-position: 300% center; } }
-
-        .navbar-fixed {
-            background: rgba(6, 9, 20, 0.78);
-            backdrop-filter: blur(22px) saturate(180%);
-            -webkit-backdrop-filter: blur(22px) saturate(180%);
-            border-bottom: 1px solid var(--border-main);
-            box-shadow: 0 8px 32px -12px rgba(0,0,0,0.6);
-        }
-
-        .status-pill {
-            display: inline-flex; align-items: center; gap: 6px;
-            padding: 6px 14px; border-radius: 999px;
-            background: rgba(34, 197, 94, 0.12);
-            color: var(--status-online);
-            border: 1px solid rgba(34, 197, 94, 0.28);
-            font-size: 12px; font-weight: 600;
-            font-family: 'Space Grotesk', sans-serif;
-            box-shadow: 0 0 20px -6px rgba(34, 197, 94, 0.5);
-        }
-        .blink { animation: blink 2s infinite; }
-        @keyframes blink { 0%,100% { opacity: 1; } 50% { opacity: 0.55; } }
-
-        .hero-title {
-            font-family: 'Space Grotesk', sans-serif;
-            font-size: 30px;
-            font-weight: 800;
-            letter-spacing: -1px;
-            line-height: 1.1;
-        }
-        @media (min-width: 768px) { .hero-title { font-size: 40px; } }
-
-        .hero-icon {
-            width: 48px; height: 48px;
-            border-radius: 15px;
-            background: linear-gradient(135deg, var(--accent-1), var(--accent-2));
-            display: flex; align-items: center; justify-content: center;
-            box-shadow: 0 16px 40px -12px rgba(168,85,247,0.7), 0 10px 24px -10px rgba(59,130,246,0.6);
-            position: relative;
-            overflow: hidden;
-            flex-shrink: 0;
-        }
-
-        input#searchInput {
-            width: 100%;
-            padding: 14px 16px 14px 48px;
-            font-size: 14px;
-            border: 1px solid var(--border-main);
-            border-radius: 14px;
-            background: rgba(13, 20, 37, 0.85);
-            color: var(--text-main);
-            font-family: 'Inter', sans-serif;
-            transition: all 0.3s ease;
-            box-shadow: inset 0 1px 3px rgba(0,0,0,0.3);
-        }
-        input#searchInput::placeholder { color: var(--text-dim); }
-        input#searchInput:focus {
-            outline: none;
-            border-color: rgba(59, 130, 246, 0.6);
-            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.12), inset 0 1px 3px rgba(0,0,0,0.3);
-            background: rgba(17, 26, 46, 0.95);
-        }
-
-        .big-thumb {
-            position: relative;
-            width: 100%;
-            aspect-ratio: 16 / 9;
-            border-radius: 28px;
-            overflow: hidden;
-            background: #000814;
-            margin-bottom: 28px;
-            box-shadow: 0 40px 80px -30px rgba(59, 130, 246, 0.55), 0 0 0 1px rgba(148, 163, 184, 0.12);
-            animation: fadeUp 0.8s ease;
-        }
-        .big-thumb img {
-            width: 100%; height: 100%;
-            object-fit: cover;
-            display: block;
-            transition: transform 10s ease;
-        }
-        .big-thumb:hover img { transform: scale(1.06); }
-        .big-thumb-overlay {
-            position: absolute; inset: 0;
-            background: linear-gradient(180deg, rgba(6,9,20,0.1) 40%, rgba(6,9,20,0.8) 100%);
-            display: flex;
-            align-items: flex-end;
-            padding: 20px 24px;
-            pointer-events: none;
-        }
-        .big-thumb-label {
-            display: inline-flex; align-items: center; gap: 8px;
-            font-family: 'Space Grotesk', sans-serif;
-            font-size: 11px; font-weight: 700;
-            letter-spacing: 1.6px; text-transform: uppercase;
-            color: #fff; padding: 7px 14px;
-            border-radius: 999px;
-            background: rgba(6, 9, 20, 0.7);
-            border: 1px solid rgba(148, 163, 184, 0.25);
-            backdrop-filter: blur(10px);
-        }
-
-        .menu-btn {
-            width: 40px; height: 40px;
-            border-radius: 12px;
-            display: flex; align-items: center; justify-content: center;
-            background: rgba(59, 130, 246, 0.1);
-            border: 1px solid rgba(59, 130, 246, 0.25);
-            color: var(--accent-3);
-            font-size: 16px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            flex-shrink: 0;
-        }
-        .menu-btn:hover {
-            background: rgba(59, 130, 246, 0.2);
-            transform: translateY(-2px);
-            box-shadow: 0 10px 24px -10px rgba(59,130,246,0.7);
-        }
-
-        #dropdownPanel {
-            position: fixed;
-            top: 0; right: 0; bottom: 0;
-            width: 100%;
-            max-width: 420px;
-            background: rgba(10, 16, 32, 0.98);
-            backdrop-filter: blur(24px);
-            border-left: 1px solid var(--border-main);
-            box-shadow: -20px 0 60px -20px rgba(0,0,0,0.9);
-            z-index: 9999;
-            transform: translateX(100%);
-            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            display: flex;
-            flex-direction: column;
-        }
-        #dropdownPanel.open {
-            transform: translateX(0);
-        }
-        .panel-header {
-            padding: 16px 20px;
-            border-bottom: 1px solid var(--border-main);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: rgba(17, 26, 46, 0.95);
-        }
-        .panel-content {
-            padding: 20px;
-            overflow-y: auto;
-            flex: 1;
-        }
+        .glass { background: rgba(13, 20, 37, 0.6); backdrop-filter: blur(16px); border: 1px solid rgba(148, 163, 184, 0.1); }
         
-        .category-item {
-            background: rgba(17, 26, 46, 0.6);
-            border: 1px solid var(--border-main);
-            border-radius: 12px;
-            padding: 14px 16px;
-            margin-bottom: 10px;
-            cursor: pointer;
-            transition: all 0.2s;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .category-item:hover {
-            background: rgba(59, 130, 246, 0.15);
-            border-color: rgba(59, 130, 246, 0.5);
-        }
-        .category-item .cat-name {
-            font-weight: 600;
-            color: var(--text-main);
-            display: flex;
-            align-items: center;
-            gap: 10px;
+        .sidebar-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(4px); z-index: 40; opacity: 0; pointer-events: none; transition: opacity 0.3s; }
+        .sidebar-overlay.active { opacity: 1; pointer-events: auto; }
+        
+        .sidebar { position: fixed; top: 0; left: 0; bottom: 0; width: 300px; background: #0a1020; border-right: 1px solid rgba(148, 163, 184, 0.1); z-index: 50; transform: translateX(-100%); transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1); display: flex; flex-direction: column; }
+        .sidebar.open { transform: translateX(0); }
+        @media (min-width: 1024px) {
+            .sidebar { transform: translateX(0); }
+            .main-content { margin-left: 300px; }
+            .sidebar-overlay { display: none !important; }
+            .mobile-menu-btn { display: none !important; }
         }
 
-        .detail-view { display: none; }
-        .detail-view.active { display: block; animation: fadeUp 0.3s ease; }
-        .list-view.hidden-view { display: none; }
+        .loader { width: 24px; height: 24px; border: 3px solid rgba(59, 130, 246, 0.2); border-top: 3px solid #3b82f6; border-radius: 50%; animation: spin 1s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        
+        .category-btn { transition: all 0.2s; border-left: 3px solid transparent; }
+        .category-btn:hover, .category-btn.active { background: rgba(59, 130, 246, 0.1); border-left-color: #3b82f6; color: #60a5fa; }
+        
+        .fade-in { animation: fadeIn 0.4s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        .api-card {
-            background: rgba(17, 26, 46, 0.8);
-            border: 1px solid var(--border-main);
-            border-radius: 12px;
-            padding: 16px;
-            margin-bottom: 12px;
-        }
-        .param-input {
-            width: 100%; padding: 10px 12px;
-            border: 1px solid var(--border-main);
-            border-radius: 8px;
-            background: rgba(4, 7, 15, 0.8);
-            color: var(--text-main);
-            font-size: 12px; font-family: 'monospace';
-        }
-        .param-input:focus { outline: none; border-color: var(--accent-2); }
-
-        .btn-exec {
-            background: linear-gradient(135deg, var(--accent-2), var(--accent-1));
-            color: white; padding: 10px 20px;
-            border-radius: 8px; font-weight: 600; font-size: 13px;
-            transition: all 0.2s; cursor: pointer; border: none;
-            width: 100%; margin-top: 12px;
-        }
-        .btn-exec:hover { opacity: 0.9; transform: translateY(-1px); }
-
-        @keyframes fadeUp {
-            from { opacity: 0; transform: translateY(10px); }
-            to   { opacity: 1; transform: translateY(0); }
-        }
-
-        body::-webkit-scrollbar { width: 8px; }
-        body::-webkit-scrollbar-track { background: var(--bg-main); }
-        body::-webkit-scrollbar-thumb { background: linear-gradient(var(--accent-1), var(--accent-2)); border-radius: 4px; }
+        .btn-gradient { background: linear-gradient(135deg, #a855f7, #3b82f6); transition: 0.3s; }
+        .btn-gradient:hover { opacity: 0.9; transform: translateY(-2px); box-shadow: 0 10px 20px -10px rgba(59, 130, 246, 0.8); }
+        
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #0a1020; }
+        ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #334155; }
     </style>
 </head>
-
-<body class="antialiased min-h-screen">
+<body class="antialiased min-h-screen relative">
 
     <div class="bg-orbs">
         <div class="orb orb-1"></div>
         <div class="orb orb-2"></div>
-        <div class="orb orb-3"></div>
     </div>
-    <div class="bg-grid"></div>
 
-    <div id="loadingScreen" class="fixed inset-0 z-50 bg-[#04070f] flex items-center justify-center transition-opacity duration-500">
+    <div id="loadingScreen" class="fixed inset-0 z-[9999] bg-[#060914] flex items-center justify-center transition-opacity duration-500">
         <div class="text-center">
-            <div class="loader mx-auto mb-4"></div>
-            <p class="text-slate-400 text-sm">Loading ...</p>
+            <div class="loader mx-auto mb-4 !w-10 !h-10"></div>
+            <p class="text-slate-400 text-sm font-display animate-pulse">Menyiapkan CHISA • API...</p>
         </div>
     </div>
 
-    <div class="navbar-fixed fixed top-0 left-0 right-0 z-40">
-        <div class="max-w-3xl mx-auto px-4">
-            <div class="flex items-center justify-between h-14 gap-3">
-                <span class="status-pill blink">
-                    <i class="fas fa-circle text-[6px]"></i>
-                    <span>Online</span>
-                </span>
+    <div id="sidebarOverlay" class="sidebar-overlay"></div>
 
-                <div class="flex items-center gap-2 relative">
-                    <a id="contactLink" href="https://wa.me/6285715989482" target="_blank" class="text-[12.5px] flex items-center gap-2 px-3 py-1.5 rounded-full font-semibold transition-all duration-200" style="color: var(--text-muted); background: rgba(34,197,94,0.08); border: 1px solid rgba(34,197,94,0.22); font-family: 'Space Grotesk', sans-serif;">
-                        <i class="fab fa-whatsapp" style="color: var(--status-online); font-size: 13px;"></i>
-                        <span class="hidden sm:inline">Information</span>
-                    </a>
-
-                    <button id="menuBtn" class="menu-btn" aria-label="Open menu">
-                        <i class="fas fa-ellipsis-v"></i>
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <main class="max-w-3xl mx-auto px-6 sm:px-8 py-16 relative">
-        <div class="h-10"></div>
-
-        <div class="text-left mb-6">
-            <div class="flex items-center gap-3 mb-3">
-                <div class="hero-icon">
-                    <i class="fas fa-code text-white text-lg"></i>
-                </div>
-                <h1 id="titleApi" class="hero-title gradient-text">CHISA • API</h1>
-            </div>
-            <p id="descApi" class="text-slate-400 text-[13.5px] leading-relaxed max-w-xl">
-                Welcome to CHISA • API documentation. Explore and test our complete collection of API endpoints.
-            </p>
-        </div>
-
-        <div class="mb-5">
-            <div class="relative">
-                <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                    <span class="material-icons text-slate-500 text-lg">search</span>
-                </div>
-                <input type="text" id="searchInput" placeholder="Search API endpoints...">
-            </div>
-        </div>
-
-        <div class="big-thumb">
-            <img src="https://media.giphy.com/media/qgQUggAC3Pfv687qPC/giphy.gif" alt="Coding Computer">
-            <div class="big-thumb-overlay">
-                <span class="big-thumb-label">
-                    <i class="fas fa-bolt"></i>
-                    <span>CHISA • API</span>
-                </span>
-            </div>
-        </div>
-
-        <div class="text-center py-8 text-slate-500 text-[13px]" style="font-family: 'Space Grotesk', sans-serif;">
-            <i class="fas fa-hand-pointer mr-2"></i>
-            Klik menu <i class="fas fa-ellipsis-v mx-1"></i> di pojok kanan atas untuk melihat API endpoints
-        </div>
-
-        <footer class="mt-8 pt-6" style="border-top: 1px solid var(--border-main);">
-            <p id="footer" class="text-slate-400 text-[13.5px] text-center mx-auto" style="font-family: 'Space Grotesk', sans-serif;">
-                © 2025 <span class="gradient-text font-bold">CHISA • API</span>
-            </p>
-        </footer>
-
-    </main>
-
-    <div id="dropdownPanel">
-        <div class="panel-header">
-            <div class="flex items-center gap-3">
-                <button id="backBtn" class="hidden text-slate-400 hover:text-white transition-colors" onclick="showListView()">
-                    <i class="fas fa-arrow-left"></i>
-                </button>
-                <h2 class="font-bold text-white font-display" id="panelTitle">API Categories</h2>
-            </div>
-            <button id="closeBtn" class="text-slate-400 hover:text-red-400 transition-colors w-8 h-8 flex items-center justify-center rounded-lg hover:bg-slate-800">
-                <i class="fas fa-times text-lg"></i>
+    <aside id="sidebar" class="sidebar shadow-2xl">
+        <div class="h-16 flex items-center justify-between px-6 border-b border-slate-800 shrink-0">
+            <span class="text-xl font-bold gradient-text font-display tracking-widest">CHISA • API</span>
+            <button onclick="toggleSidebar()" class="lg:hidden text-slate-400 hover:text-white">
+                <i class="fas fa-times"></i>
             </button>
         </div>
-        
-        <div class="panel-content">
-            <div id="listView" class="list-view">
-                <div id="categoryListContainer" class="space-y-2">
-                </div>
-            </div>
 
-            <div id="detailView" class="detail-view">
-                <div id="detailContent">
+        <div class="flex-1 overflow-y-auto py-4 px-3 space-y-1" id="sidebarMenu">
+            <p class="px-3 text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-2 mt-2">API Categories</p>
+            <div id="categoryList">
+            </div>
+        </div>
+
+        <div class="p-4 border-t border-slate-800 bg-[#04070f] shrink-0">
+            <div class="flex items-center gap-3">
+                <img src="https://cdn.zass.in/lsXr7NCsX8.jpeg" class="w-8 h-8 rounded-full border border-slate-700">
+                <div>
+                    <p class="text-xs font-bold text-white">Administrator</p>
+                    <p class="text-[10px] text-green-400"><i class="fas fa-circle text-[6px] mr-1"></i> Online</p>
                 </div>
             </div>
         </div>
-    </div>
+    </aside>
+
+    <main class="main-content flex-1 flex flex-col min-h-screen w-full relative transition-all duration-300">
+        
+        <header class="glass sticky top-0 z-30 flex items-center justify-between px-4 sm:px-6 h-16 shadow-lg">
+            <div class="flex items-center gap-4">
+                <button onclick="toggleSidebar()" class="mobile-menu-btn text-slate-300 hover:text-white w-10 h-10 flex items-center justify-center bg-slate-800 rounded-lg">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <h1 class="text-sm font-bold text-slate-200 hidden sm:block font-display">Documentation Panel</h1>
+            </div>
+            <div class="flex items-center gap-3">
+                <a href="https://wa.me/6285715989482" target="_blank" class="text-green-400 hover:text-green-300 bg-green-500/10 px-3 py-1.5 rounded-full text-xs font-semibold border border-green-500/20 transition-all">
+                    <i class="fab fa-whatsapp mr-1"></i> Contact
+                </a>
+            </div>
+        </header>
+
+        <div class="p-4 sm:p-6 lg:p-8 flex-1">
+            <div class="max-w-5xl mx-auto w-full">
+                
+                <div class="mb-6 fade-in">
+                    <h2 class="text-2xl sm:text-3xl font-extrabold text-white mb-2 font-display">Explore API</h2>
+                    <p class="text-slate-400 text-sm">Pilih kategori di menu sebelah kiri, lalu klik endpoint untuk mencoba.</p>
+                </div>
+
+                <div class="relative w-full mb-8 fade-in">
+                    <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                        <i class="fas fa-search text-slate-500"></i>
+                    </div>
+                    <input type="text" id="searchInput" placeholder="Cari nama API atau endpoint..." class="w-full pl-11 pr-4 py-3 bg-[#0a1020]/80 backdrop-blur-md border border-slate-700 text-sm rounded-xl focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 text-slate-200 transition-all shadow-inner">
+                </div>
+
+                <div class="big-thumb relative w-full aspect-video rounded-3xl overflow-hidden mb-6 shadow-2xl shadow-blue-900/20 border border-slate-800 fade-in">
+                    <img src="https://media.giphy.com/media/qgQUggAC3Pfv687qPC/giphy.gif" alt="Coding" class="w-full h-full object-cover opacity-80">
+                    <div class="absolute inset-0 bg-gradient-to-t from-[#060914] via-transparent to-transparent"></div>
+                    <div class="absolute bottom-4 left-6">
+                        <span class="bg-black/60 backdrop-blur-md border border-slate-600 text-white text-xs font-bold px-3 py-1.5 rounded-full"><i class="fas fa-code text-blue-400 mr-2"></i>CHISA Developer</span>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-8 fade-in">
+                    <div class="glass p-4 rounded-2xl flex items-center justify-between">
+                        <div>
+                            <p class="text-xs text-slate-400 font-semibold mb-1">Baterai</p>
+                            <p id="batteryStatus" class="text-lg font-bold text-white">--%</p>
+                        </div>
+                        <div class="w-10 h-10 rounded-full bg-green-500/10 flex items-center justify-center text-green-400">
+                            <i class="fas fa-battery-full text-lg" id="batteryIcon"></i>
+                        </div>
+                    </div>
+                    <div class="glass p-4 rounded-2xl flex items-center justify-between">
+                        <div>
+                            <p class="text-xs text-slate-400 font-semibold mb-1">Jaringan</p>
+                            <p id="networkStatus" class="text-lg font-bold text-white">--</p>
+                        </div>
+                        <div class="w-10 h-10 rounded-full bg-blue-500/10 flex items-center justify-center text-blue-400">
+                            <i class="fas fa-wifi text-lg"></i>
+                        </div>
+                    </div>
+                    <div class="glass p-4 rounded-2xl flex items-center justify-between">
+                        <div>
+                            <p class="text-xs text-slate-400 font-semibold mb-1">Waktu Server</p>
+                            <p id="clockStatus" class="text-lg font-bold text-white font-mono">--:--:--</p>
+                        </div>
+                        <div class="w-10 h-10 rounded-full bg-purple-500/10 flex items-center justify-center text-purple-400">
+                            <i class="fas fa-clock text-lg"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="api-content-area" class="fade-in">
+                    <div class="text-center py-16 glass rounded-3xl border border-dashed border-slate-700">
+                        <i class="fas fa-hand-pointer text-3xl text-slate-600 mb-4 animate-bounce"></i>
+                        <h3 class="text-slate-300 font-bold mb-1">Belum Ada API Dipilih</h3>
+                        <p class="text-slate-500 text-sm">Silakan pilih kategori di menu kiri untuk memulai.</p>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <footer class="mt-auto py-5 text-center border-t border-slate-800/50">
+            <p class="text-xs text-slate-500 font-display">© 2025 <span class="text-blue-400 font-bold">CHISA • API</span></p>
+        </footer>
+    </main>
 
     <div class="hidden">
         <span id="totalApis">0</span>
@@ -443,202 +197,62 @@
         <span id="batteryDetail">0</span>
         <span id="networkType">0</span>
         <span id="quotaInfo">0</span>
-        <div id="apiList"></div>
-        <div id="noResults"></div>
+        <span id="titleApi"></span>
+        <span id="descApi"></span>
+        <span id="footer"></span>
     </div>
 
     <script>
-        const overlay = document.createElement('div');
-        overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.6);backdrop-filter:blur(4px);z-index:9998;opacity:0;pointer-events:none;transition:opacity 0.3s;';
-        document.body.appendChild(overlay);
-
-        const menuBtn = document.getElementById('menuBtn');
-        const panel = document.getElementById('dropdownPanel');
-        const closeBtn = document.getElementById('closeBtn');
-
-        function openPanel() {
-            panel.classList.add('open');
-            overlay.style.opacity = '1';
-            overlay.style.pointerEvents = 'auto';
-            renderCategories();
-        }
-
-        function closePanel() {
-            panel.classList.remove('open');
-            overlay.style.opacity = '0';
-            overlay.style.pointerEvents = 'none';
-            setTimeout(showListView, 300);
-        }
-
-        menuBtn.addEventListener('click', openPanel);
-        closeBtn.addEventListener('click', closePanel);
-        overlay.addEventListener('click', closePanel);
-
-        function renderCategories() {
-            const container = document.getElementById('categoryListContainer');
-            container.innerHTML = '';
-            
-            if (typeof settings === 'undefined' || !settings.categories || settings.categories.length === 0) {
-                container.innerHTML = '<p class="text-slate-400 text-sm text-center py-4">Belum ada data API.</p>';
-                return;
-            }
-
-            settings.categories.forEach((cat, index) => {
-                const div = document.createElement('div');
-                div.className = 'category-item';
-                div.onclick = () => showCategoryDetail(index);
-                
-                let icon = 'folder';
-                if(typeof categoryIcons !== 'undefined' && categoryIcons[cat.name]) {
-                    icon = categoryIcons[cat.name];
-                }
-
-                div.innerHTML = `
-                    <div class="cat-name">
-                        <span class="material-icons text-blue-400 text-lg">${icon}</span>
-                        ${cat.name}
-                    </div>
-                    <span class="text-xs bg-slate-800 text-slate-300 px-2 py-0.5 rounded-full">${cat.items.length}</span>
-                `;
-                container.appendChild(div);
-            });
-        }
-
-        function showCategoryDetail(catIndex) {
-            const cat = settings.categories[catIndex];
-            if(!cat) return;
-
-            document.getElementById('listView').classList.add('hidden-view');
-            document.getElementById('detailView').classList.add('active');
-            document.getElementById('backBtn').classList.remove('hidden');
-            document.getElementById('panelTitle').textContent = cat.name;
-
-            const container = document.getElementById('detailContent');
-            container.innerHTML = '';
-
-            cat.items.forEach((item, i) => {
-                const card = document.createElement('div');
-                card.className = 'api-card';
-                
-                let formHtml = '';
-                const queryString = item.path.split('?')[1];
-                if (queryString) {
-                    const params = new URLSearchParams(queryString);
-                    for (const [key, val] of params) {
-                        if (val === '' || val === 'YOUR_API_KEY' || key === 'apikey') {
-                            formHtml += `
-                                <div class="mb-3">
-                                    <label class="block text-[11px] font-medium text-slate-400 mb-1">${key}</label>
-                                    <input type="text" class="param-input" id="param-${catIndex}-${i}-${key}" placeholder="Masukkan ${key}...">
-                                </div>
-                            `;
-                        }
-                    }
-                }
-
-                card.innerHTML = `
-                    <div class="flex items-center justify-between mb-2">
-                        <h3 class="font-bold text-sm text-white">${item.name}</h3>
-                        <span class="text-[10px] font-bold px-2 py-0.5 rounded border border-blue-500/50 text-blue-400 bg-blue-500/10">${item.method || 'GET'}</span>
-                    </div>
-                    <p class="text-xs text-slate-400 mb-3">${item.desc}</p>
-                    <div class="bg-[#04070f] p-2 rounded border border-gray-800 mb-3 overflow-x-auto">
-                        <code class="text-[11px] text-green-400 whitespace-nowrap" id="url-display-${catIndex}-${i}">${item.path}</code>
-                    </div>
-                    <div id="form-area-${catIndex}-${i}">
-                        ${formHtml}
-                    </div>
-                    <button class="btn-exec" onclick="execApi(${catIndex}, ${i})">
-                        <i class="fas fa-play mr-1"></i> Test Endpoint
-                    </button>
-                    <div id="response-area-${catIndex}-${i}" class="mt-3 hidden">
-                        <div class="bg-[#04070f] p-3 rounded border border-gray-800 text-xs font-mono text-slate-300 max-h-40 overflow-auto" id="response-content-${catIndex}-${i}"></div>
-                    </div>
-                `;
-                container.appendChild(card);
-
-                if(formHtml) {
-                    const inputs = card.querySelectorAll('.param-input');
-                    inputs.forEach(input => {
-                        input.addEventListener('input', () => {
-                            updateMiniUrl(catIndex, i, item.path);
-                        });
-                    });
-                }
-            });
-        }
-
-        function showListView() {
-            document.getElementById('listView').classList.remove('hidden-view');
-            document.getElementById('detailView').classList.remove('active');
-            document.getElementById('backBtn').classList.add('hidden');
-            document.getElementById('panelTitle').textContent = 'API Categories';
-        }
-
-        function updateMiniUrl(catIndex, i, basePath) {
-            const base = basePath.split('?')[0];
-            const inputs = document.querySelectorAll(`#form-area-${catIndex}-${i} .param-input`);
-            const urlParams = new URLSearchParams();
-            inputs.forEach(input => {
-                if(input.value.trim()) {
-                    const key = input.id.split('-').pop();
-                    urlParams.set(key, input.value.trim());
-                }
-            });
-            const finalUrl = base + (urlParams.toString() ? '?' + urlParams.toString() : '');
-            document.getElementById(`url-display-${catIndex}-${i}`).textContent = finalUrl;
-        }
-
-        async function execApi(catIndex, i) {
-            const item = settings.categories[catIndex].items[i];
-            const respArea = document.getElementById(`response-area-${catIndex}-${i}`);
-            const respContent = document.getElementById(`response-content-${catIndex}-${i}`);
-            const urlDisplay = document.getElementById(`url-display-${catIndex}-${i}`).textContent;
-
-            respArea.classList.remove('hidden');
-            respContent.innerHTML = '<span class="text-blue-400 animate-pulse">Fetching data...</span>';
-
-            try {
-                const res = await fetch(urlDisplay, {
-                    method: item.method || 'GET',
-                    headers: { 'Accept': '*/*' }
-                });
-
-                if(!res.ok) throw new Error(`HTTP ${res.status}`);
-
-                const contentType = res.headers.get('content-type') || '';
-                
-                if(contentType.includes('application/json')) {
-                    const json = await res.json();
-                    respContent.textContent = JSON.stringify(json, null, 2);
-                } else if (contentType.startsWith('image/')) {
-                    const blob = await res.blob();
-                    const objUrl = URL.createObjectURL(blob);
-                    respContent.innerHTML = `<img src="${objUrl}" class="w-full rounded">`;
-                } else {
-                    const text = await res.text();
-                    respContent.textContent = text;
-                }
-            } catch (err) {
-                respContent.innerHTML = `<span class="text-red-400">Error: ${err.message}</span>`;
-            }
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebarOverlay');
+            sidebar.classList.toggle('open');
+            overlay.classList.toggle('active');
         }
 
         function updateDeviceInfo() {
             if ('getBattery' in navigator) {
                 navigator.getBattery().then(function (battery) {
-                    const level = Math.round(battery.level * 100) + '%';
-                    document.getElementById('batteryLevel').textContent = level;
+                    const level = Math.round(battery.level * 100);
+                    const status = level + '%' + (battery.charging ? ' ⚡' : '');
+                    
+                    const batEl = document.getElementById('batteryStatus');
+                    if(batEl) batEl.textContent = status;
+                    
+                    const icon = document.getElementById('batteryIcon');
+                    if(icon) {
+                        icon.className = 'fas ' + (
+                            level > 80 ? 'fa-battery-full' :
+                            level > 60 ? 'fa-battery-three-quarters' :
+                            level > 40 ? 'fa-battery-half' :
+                            level > 20 ? 'fa-battery-quarter' : 'fa-battery-empty'
+                        ) + ' text-lg';
+                    }
                 });
             }
+
+            if (navigator.connection) {
+                const type = navigator.connection.effectiveType || 'Unknown';
+                const dl = navigator.connection.downlink ? navigator.connection.downlink + ' Mbps' : '';
+                const netEl = document.getElementById('networkStatus');
+                if(netEl) netEl.textContent = type.toUpperCase() + (dl ? ' • ' + dl : '');
+            } else {
+                document.getElementById('networkStatus').textContent = 'Terhubung';
+            }
         }
+
+        function updateClock() {
+            const now = new Date();
+            const timeString = now.toLocaleTimeString('id-ID', { hour12: false });
+            const clockEl = document.getElementById('clockStatus');
+            if(clockEl) clockEl.textContent = timeString;
+        }
+
         document.addEventListener('DOMContentLoaded', () => {
             updateDeviceInfo();
-            const ls = document.getElementById('loadingScreen');
-            if(ls) {
-                ls.style.opacity = '0';
-                setTimeout(() => ls.remove(), 500);
-            }
+            setInterval(updateDeviceInfo, 30000);
+            updateClock();
+            setInterval(updateClock, 1000);
         });
     </script>
 

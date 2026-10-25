@@ -1,5 +1,5 @@
 let settings = {};
-let allApiItems = [];
+let currentCategoryIndex = null;
 
 const categoryIcons = {
     'Downloader': 'folder',
@@ -22,8 +22,8 @@ async function initializeApp() {
     try {
         settings = await loadSettings();
         setupUI();
-        await loadAPIData();
-        setupEventListeners();
+        renderSidebarCategories();
+        setupSearch();
     } catch (error) {
         console.error('Error:', error);
         showErrorMessage(error);
@@ -60,10 +60,16 @@ function getDefaultSettings() {
 function getDefaultCategories() {
     return [
         {
-            name: "Asupan API",
+            name: "AI",
             items: [
-                { name: "Asupan Anony", path: "/asupan/anony?apikey=", method: "GET", desc: "Random video asupan anony" },
-                { name: "Asupan Bocil", path: "/asupan/bocil?apikey=", method: "GET", desc: "Random video asupan bocil" }
+                { name: "AI ChatGPT", path: "/ai/chatgpt?apikey=&text=", method: "GET", desc: "Menghasilkan teks menggunakan kecerdasan buatan ChatGPT." },
+                { name: "AI Gemini", path: "/ai/gemini?apikey=&text=", method: "GET", desc: "Menghasilkan teks menggunakan Google Gemini." }
+            ]
+        },
+        {
+            name: "Downloader",
+            items: [
+                { name: "TikTok Downloader", path: "/downloader/tiktok?apikey=&url=", method: "GET", desc: "Mengunduh video dari TikTok tanpa watermark." }
             ]
         }
     ];
@@ -83,517 +89,241 @@ function setupUI() {
     if(footer) footer.textContent = `© 2025 ${settings.creator} - ${settings.name}`;
 }
 
-async function loadAPIData() {
-    const apiList = document.getElementById('apiList');
-    if (!apiList) return;
+function renderSidebarCategories() {
+    const container = document.getElementById('categoryList');
+    if (!container) return;
+    
+    container.innerHTML = '';
     
     if (!settings.categories || settings.categories.length === 0) {
-        settings.categories = getDefaultCategories();
+        container.innerHTML = '<p class="text-slate-500 text-xs px-3">Kategori kosong.</p>';
+        return;
     }
-    
-    allApiItems = [];
-    let totalApis = 0;
 
-    let html = '<div class="space-y-6">';
-    
-    settings.categories.forEach((category, catIndex) => {
-        totalApis += category.items.length;
-        const icon = categoryIcons[category.name] || 'folder';
+    settings.categories.forEach((cat, index) => {
+        const icon = categoryIcons[cat.name] || 'folder';
+        const btn = document.createElement('button');
+        btn.className = 'category-btn w-full flex items-center justify-between px-3 py-2.5 text-sm text-slate-400 rounded-r-lg mb-1';
+        btn.id = `cat-btn-${index}`;
+        btn.onclick = () => selectCategory(index);
         
-        html += `
-        <div class="category-group mb-8" data-category="${category.name.toLowerCase()}">
-            <div class="mb-3 flex items-center gap-2 border-b border-slate-700 pb-2">
-                <span class="material-icons text-lg text-blue-400">${icon}</span>
-                <h2 class="font-bold text-sm text-white uppercase tracking-wider">${category.name}</h2>
-                <span class="ml-auto text-xs bg-slate-800 text-slate-300 px-2 py-0.5 rounded-full">${category.items.length} Endpoints</span>
+        btn.innerHTML = `
+            <div class="flex items-center gap-3">
+                <span class="material-icons text-lg opacity-70">${icon}</span>
+                <span class="font-medium">${cat.name}</span>
             </div>
-            
-            <div class="bg-[#1e293b] border border-slate-700 rounded-xl overflow-hidden shadow-lg">
-                <div class="overflow-x-auto">
-                    <table class="w-full text-left border-collapse">
-                        <thead class="bg-[#0f172a] border-b border-slate-700">
-                            <tr>
-                                <th class="py-3 px-4 text-xs font-semibold text-slate-400 uppercase">Name</th>
-                                <th class="py-3 px-4 text-xs font-semibold text-slate-400 uppercase hidden sm:table-cell">Parameter</th>
-                                <th class="py-3 px-4 text-xs font-semibold text-slate-400 uppercase">Method</th>
-                                <th class="py-3 px-4 text-xs font-semibold text-slate-400 uppercase">Status</th>
-                                <th class="py-3 px-4 text-xs font-semibold text-slate-400 uppercase text-center">Try</th>
-                            </tr>
-                        </thead>
-                        <tbody class="divide-y divide-slate-700/50">`;
-        
-        category.items.forEach((item, endpointIndex) => {
-            const method = item.method || 'GET';
-            const pathParts = item.path.split('?');
-            const path = pathParts[0];
-            
-            const queryString = pathParts[1] || '';
-            const urlParams = new URLSearchParams(queryString);
-            const paramNames = [];
-            for (const [key] of urlParams) {
-                if(key !== 'apikey') paramNames.push(key);
-            }
-            const paramText = paramNames.length > 0 ? paramNames.join(', ') : (queryString ? 'apikey' : '-');
-
-            const statusClass = 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20';
-            const methodColor = method === 'GET' ? 'text-blue-400 border-blue-400' : 'text-green-400 border-green-400';
-
-            html += `
-                <tr class="api-item hover:bg-slate-800/50 transition-colors"
-                    data-method="${method.toLowerCase()}"
-                    data-path="${path}"
-                    data-alias="${item.name}"
-                    data-description="${item.desc}"
-                    data-category="${category.name.toLowerCase()}">
-                    
-                    <td class="py-3 px-4">
-                        <div class="font-medium text-sm text-slate-200">${item.name}</div>
-                        <div class="text-[11px] text-slate-500 font-mono truncate max-w-[150px] sm:max-w-[250px]" title="${path}">${path}</div>
-                    </td>
-                    
-                    <td class="py-3 px-4 hidden sm:table-cell">
-                        <span class="text-xs text-slate-400 font-mono bg-slate-900 px-2 py-1 rounded border border-slate-700">${paramText}</span>
-                    </td>
-                    
-                    <td class="py-3 px-4">
-                        <span class="text-[10px] font-bold px-2 py-1 border rounded bg-transparent ${methodColor}">${method}</span>
-                    </td>
-                    
-                    <td class="py-3 px-4">
-                        <span class="text-[10px] font-bold px-2 py-1 rounded ${statusClass}">ONLINE</span>
-                    </td>
-                    
-                    <td class="py-3 px-4 text-center">
-                        <button onclick="toggleEndpoint(${catIndex}, ${endpointIndex})" class="text-xs bg-blue-600 hover:bg-blue-500 text-white px-3 py-1.5 rounded transition-colors flex items-center gap-1 mx-auto">
-                            <i class="fas fa-play text-[10px]"></i> Try
-                        </button>
-                    </td>
-                </tr>
-            `;
-            
-            html += `
-                <tr id="endpoint-row-${catIndex}-${endpointIndex}" class="hidden bg-[#0f172a]">
-                    <td colspan="5" class="p-0 border-b border-slate-700">
-                        <div class="p-5 border-l-4 border-blue-500">
-                            <div class="mb-3">
-                                <div class="text-slate-400 text-xs mb-1">Description:</div>
-                                <div class="text-sm text-slate-200">${item.desc}</div>
-                            </div>
-                            
-                            <form id="form-${catIndex}-${endpointIndex}">
-                                <div class="mb-4 space-y-3 grid grid-cols-1 sm:grid-cols-2 gap-3" id="params-container-${catIndex}-${endpointIndex}">
-                                </div>
-                                
-                                <div class="mb-4">
-                                    <div class="text-slate-400 font-bold text-[11px] mb-2 uppercase tracking-wider">Request URL</div>
-                                    <div class="flex items-center gap-2">
-                                        <div class="flex-1 bg-slate-900 border border-slate-700 rounded px-3 py-2 overflow-x-auto">
-                                            <code class="text-xs text-blue-300 whitespace-nowrap" id="url-display-${catIndex}-${endpointIndex}">${item.path}</code>
-                                        </div>
-                                        <button type="button" onclick="copyUrl(${catIndex}, ${endpointIndex})" class="bg-slate-800 hover:bg-slate-700 border border-slate-600 text-slate-300 p-2 rounded transition-colors" title="Copy URL">
-                                            <i class="fas fa-copy"></i>
-                                        </button>
-                                    </div>
-                                </div>
-                                
-                                <div class="flex gap-2">
-                                    <button type="button" onclick="executeRequest(event, ${catIndex}, ${endpointIndex}, '${method}', '${path}', 'application/json')" class="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white font-medium px-5 py-2 text-xs rounded transition-all flex items-center gap-2 shadow-lg shadow-blue-500/20">
-                                        <i class="fas fa-bolt"></i> Execute
-                                    </button>
-                                    <button type="button" onclick="clearResponse(${catIndex}, ${endpointIndex})" class="bg-slate-800 hover:bg-slate-700 border border-slate-600 text-slate-300 font-medium px-5 py-2 text-xs rounded transition-colors flex items-center gap-2">
-                                        <i class="fas fa-eraser"></i> Clear
-                                    </button>
-                                </div>
-                            </form>
-
-                            <div id="response-${catIndex}-${endpointIndex}" class="hidden mt-5">
-                                <div class="text-slate-400 font-bold text-[11px] mb-2 uppercase tracking-wider flex items-center">
-                                    <span class="material-icons text-[14px] mr-1">code</span> Response
-                                </div>
-                                <div class="bg-[#04070f] border border-slate-700 rounded-lg overflow-hidden">
-                                    <div class="px-4 py-2 bg-[#1e293b] border-b border-slate-700 flex items-center justify-between">
-                                        <div class="flex items-center gap-3">
-                                            <span id="response-status-${catIndex}-${endpointIndex}" class="text-[10px] font-bold px-2 py-1 rounded bg-green-500/20 text-green-400">200 OK</span>
-                                            <span id="response-time-${catIndex}-${endpointIndex}" class="text-[10px] text-slate-500">0ms</span>
-                                        </div>
-                                        <button onclick="copyResponse(${catIndex}, ${endpointIndex})" class="text-slate-400 hover:text-white transition-colors" title="Copy Response">
-                                            <i class="fas fa-copy text-xs"></i>
-                                        </button>
-                                    </div>
-                                    <div class="p-0 max-h-[400px] overflow-auto">
-                                        <div class="response-media-container p-2" id="response-content-${catIndex}-${endpointIndex}"></div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </td>
-                </tr>`;
-        });
-        
-        html += `</tbody></table></div></div></div>`;
+            <span class="text-[10px] bg-slate-800 text-slate-300 px-2 py-0.5 rounded-full">${cat.items.length}</span>
+        `;
+        container.appendChild(btn);
     });
-    
-    html += '</div>';
-    apiList.innerHTML = html;
-    
-    settings.categories.forEach((category, catIndex) => {
-        category.items.forEach((item, endpointIndex) => {
-            initializeEndpointParameters(catIndex, endpointIndex, item);
-        });
-    });
-    
-    if(document.getElementById('totalApis')) document.getElementById('totalApis').textContent = totalApis;
-    if(document.getElementById('totalCategories')) document.getElementById('totalCategories').textContent = settings.categories.length;
-    
-    initializeSearch();
 }
 
-function initializeEndpointParameters(catIndex, endpointIndex, item) {
-    const paramsContainer = document.getElementById(`params-container-${catIndex}-${endpointIndex}`);
-    if(!paramsContainer) return;
+function selectCategory(index) {
+    currentCategoryIndex = index;
     
-    const params = extractParameters(item.path);
+    document.querySelectorAll('.category-btn').forEach(btn => btn.classList.remove('active'));
+    const activeBtn = document.getElementById(`cat-btn-${index}`);
+    if (activeBtn) activeBtn.classList.add('active');
+
+    if (window.innerWidth < 1024) {
+        toggleSidebar();
+    }
+
+    const cat = settings.categories[index];
+    const contentArea = document.getElementById('api-content-area');
     
-    if (params.length === 0) {
-        paramsContainer.innerHTML = `
-            <div class="col-span-full text-xs text-slate-500 italic flex items-center gap-2">
-                <i class="fas fa-check-circle text-green-500"></i> No parameters required
+    let html = `
+        <div class="mb-5 flex items-center gap-3 border-b border-slate-800 pb-3">
+            <span class="material-icons text-2xl text-blue-500">${categoryIcons[cat.name] || 'folder'}</span>
+            <h2 class="text-xl font-bold text-white font-display">${cat.name} Endpoints</h2>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+    `;
+
+    cat.items.forEach((item, i) => {
+        const methodColor = (item.method || 'GET') === 'GET' ? 'text-green-400 border-green-500/30' : 'text-yellow-400 border-yellow-500/30';
+        html += `
+            <div class="glass rounded-2xl p-5 border border-slate-700/50 hover:border-blue-500/50 transition-all cursor-pointer group" onclick="openEndpointDetail(${index}, ${i})">
+                <div class="flex justify-between items-start mb-2">
+                    <h3 class="font-bold text-white group-hover:text-blue-400 transition-colors">${item.name}</h3>
+                    <span class="text-[10px] font-bold px-2 py-1 border rounded bg-transparent ${methodColor}">${item.method || 'GET'}</span>
+                </div>
+                <p class="text-xs text-slate-400 mb-4 line-clamp-2">${item.desc}</p>
+                <div class="bg-[#04070f] p-2 rounded border border-slate-800 overflow-hidden">
+                    <code class="text-[11px] text-blue-300 whitespace-nowrap block truncate">${item.path}</code>
+                </div>
             </div>
         `;
-        return;
-    }
-    
-    let paramsHtml = '';
-    params.forEach(param => {
-        const isRequired = param.required;
-        paramsHtml += `
-            <div>
-                <label class="block text-[11px] font-medium text-slate-400 mb-1">
-                    ${param.name} ${isRequired ? '<span class="text-red-400">*</span>' : ''}
-                    <span class="text-slate-600 ml-1">(${param.type})</span>
-                </label>
-                <input 
-                    type="text" 
-                    name="${param.name}" 
-                    class="w-full px-3 py-2 border border-slate-700 rounded-lg text-xs focus:outline-none focus:border-blue-500 bg-[#04070f] text-slate-200 placeholder-slate-600 transition-colors"
-                    placeholder="Enter ${param.name}..."
-                    ${isRequired ? 'required' : ''}
-                    oninput="updateRequestUrl(${catIndex}, ${endpointIndex})"
-                    id="param-${catIndex}-${endpointIndex}-${param.name}"
-                >
-            </div>`;
     });
-    
-    paramsContainer.innerHTML = paramsHtml;
-    updateRequestUrl(catIndex, endpointIndex);
+
+    html += `</div>`;
+    contentArea.innerHTML = html;
+    contentArea.classList.remove('fade-in');
+    void contentArea.offsetWidth;
+    contentArea.classList.add('fade-in');
 }
 
-function extractParameters(path) {
-    const params = [];
-    const queryString = path.split('?')[1];
-    if (!queryString) return params;
-    
+function openEndpointDetail(catIndex, itemIndex) {
+    const cat = settings.categories[catIndex];
+    const item = cat.items[itemIndex];
+    const contentArea = document.getElementById('api-content-area');
+
+    const queryString = item.path.split('?')[1];
     const urlParams = new URLSearchParams(queryString);
-    for (const [key, value] of urlParams) {
-        if (value === '' || value === 'YOUR_API_KEY' || key === 'apikey') {
-            params.push({
-                name: key,
-                required: true,
-                type: getParamType(key),
-                description: getParamDescription(key)
-            });
+    let formHtml = '';
+
+    if (queryString) {
+        for (const [key, val] of urlParams) {
+            formHtml += `
+                <div class="mb-3">
+                    <label class="block text-[11px] font-bold text-slate-400 mb-1 uppercase tracking-wider">${key}</label>
+                    <input type="text" id="param-${key}" class="w-full px-3 py-2 border border-slate-700 rounded-lg text-sm bg-[#04070f] text-white focus:outline-none focus:border-blue-500 transition-colors" placeholder="Masukkan ${key}...">
+                </div>
+            `;
         }
     }
-    return params;
-}
 
-function getParamType(paramName) {
-    const types = {
-        'apikey': 'string', 'url': 'string', 'question': 'string',
-        'query': 'string', 'prompt': 'string', 'format': 'string',
-        'quality': 'string', 'size': 'string', 'limit': 'number'
-    };
-    return types[paramName] || 'string';
-}
-
-function getParamDescription(paramName) {
-    const descriptions = {
-        'apikey': 'Your API key for authentication',
-        'url': 'URL of the content to download/process',
-        'question': 'Question or message to ask the AI',
-        'query': 'Search query or keywords',
-        'prompt': 'Text description for image generation',
-        'format': 'Output format (mp4, mp3, jpg, png)',
-        'quality': 'Video quality (360p, 720p, 1080p)',
-        'size': 'Image dimensions (512x512, 1024x1024)',
-        'limit': 'Number of results to return'
-    };
-    return descriptions[paramName] || paramName;
-}
-
-function initializeSearch() {
-    allApiItems = [];
-    const apiItems = document.querySelectorAll('.api-item');
-    apiItems.forEach(item => {
-        const name = item.getAttribute('data-alias') || '';
-        const desc = item.getAttribute('data-description') || '';
-        const path = item.getAttribute('data-path') || '';
-        const category = item.getAttribute('data-category') || '';
+    let html = `
+        <button onclick="selectCategory(${catIndex})" class="text-sm text-blue-400 hover:text-white mb-4 flex items-center gap-2 transition-colors">
+            <i class="fas fa-arrow-left"></i> Kembali ke ${cat.name}
+        </button>
         
-        allApiItems.push({
-            element: item,
-            name: name.toLowerCase(),
-            desc: desc.toLowerCase(),
-            path: path.toLowerCase(),
-            category: category.toLowerCase()
-        });
-    });
-}
+        <div class="glass rounded-3xl p-6 sm:p-8 border border-slate-700/50 relative overflow-hidden">
+            <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500"></div>
+            
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
+                <div>
+                    <h2 class="text-2xl font-bold text-white font-display mb-1">${item.name}</h2>
+                    <p class="text-sm text-slate-400">${item.desc}</p>
+                </div>
+                <span class="text-xs font-bold px-3 py-1.5 border rounded-lg bg-green-500/10 text-green-400 border-green-500/20">${item.method || 'GET'}</span>
+            </div>
 
-function setupEventListeners() {
-    const searchInput = document.getElementById('searchInput');
-    if (searchInput) {
-        searchInput.addEventListener('input', function() {
-            const searchTerm = this.value.toLowerCase().trim();
-            const noResults = document.getElementById('noResults');
-            
-            if (!searchTerm) {
-                document.querySelectorAll('.category-group').forEach(group => group.style.display = '');
-                document.querySelectorAll('.api-item').forEach(item => item.style.display = '');
-                document.querySelectorAll('tr[id^="endpoint-row-"]').forEach(row => row.classList.add('hidden'));
-                if(noResults) noResults.classList.add('hidden');
-                return;
-            }
-            
-            let visibleCount = 0;
-            
-            allApiItems.forEach(item => {
-                const matches = item.name.includes(searchTerm) || 
-                                item.desc.includes(searchTerm) || 
-                                item.path.includes(searchTerm) ||
-                                item.category.includes(searchTerm);
-                
-                if (matches && item.element) {
-                    item.element.style.display = '';
-                    const categoryGroup = item.element.closest('.category-group');
-                    if (categoryGroup) categoryGroup.style.display = '';
-                    visibleCount++;
-                } else if (item.element) {
-                    item.element.style.display = 'none';
-                }
+            <div class="mb-6">
+                <label class="block text-[11px] font-bold text-slate-400 mb-2 uppercase tracking-wider">Request URL</label>
+                <div class="flex gap-2">
+                    <div class="flex-1 bg-[#04070f] border border-slate-700 rounded-xl px-4 py-3 overflow-x-auto">
+                        <code id="full-url" class="text-sm text-blue-300 whitespace-nowrap">${item.path}</code>
+                    </div>
+                    <button onclick="copyToClipboard(document.getElementById('full-url').innerText)" class="bg-slate-800 hover:bg-slate-700 px-4 rounded-xl border border-slate-700 text-slate-300 transition-colors">
+                        <i class="fas fa-copy"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="mb-6 grid grid-cols-1 sm:grid-cols-2 gap-4" id="params-wrapper">
+                ${formHtml || '<p class="text-sm text-slate-500 italic col-span-2">Endpoint ini tidak membutuhkan parameter.</p>'}
+            </div>
+
+            <button onclick="executeApiRequest(${catIndex}, ${itemIndex})" class="btn-gradient w-full py-3 rounded-xl font-bold text-white text-sm shadow-lg flex items-center justify-center gap-2">
+                <i class="fas fa-play"></i> Eksekusi Endpoint
+            </button>
+
+            <div id="response-container" class="hidden mt-6 border-t border-slate-700 pt-6">
+                <div class="flex justify-between items-center mb-3">
+                    <h3 class="text-sm font-bold text-white"><i class="fas fa-terminal text-purple-400 mr-2"></i> Response</h3>
+                    <div class="flex items-center gap-2">
+                        <span id="res-status" class="text-[10px] font-bold px-2 py-1 rounded bg-slate-800 text-slate-300">--</span>
+                        <span id="res-time" class="text-[10px] text-slate-500 font-mono">0ms</span>
+                    </div>
+                </div>
+                <div class="bg-[#04070f] border border-slate-800 rounded-xl overflow-hidden relative">
+                    <button onclick="copyToClipboard(document.getElementById('res-body').innerText)" class="absolute top-2 right-2 bg-slate-800/80 hover:bg-slate-700 text-slate-300 p-2 rounded-lg text-xs z-10 backdrop-blur-sm">
+                        <i class="fas fa-copy"></i>
+                    </button>
+                    <div id="res-body" class="p-4 overflow-auto max-h-[500px] text-sm"></div>
+                </div>
+            </div>
+        </div>
+    `;
+
+    contentArea.innerHTML = html;
+    contentArea.classList.remove('fade-in');
+    void contentArea.offsetWidth;
+    contentArea.classList.add('fade-in');
+
+    if (queryString) {
+        const inputs = contentArea.querySelectorAll('input[type="text"]');
+        inputs.forEach(input => {
+            input.addEventListener('input', () => {
+                const base = item.path.split('?')[0];
+                const params = new URLSearchParams();
+                inputs.forEach(i => {
+                    if (i.value.trim()) params.set(i.id.replace('param-', ''), i.value.trim());
+                });
+                document.getElementById('full-url').innerText = base + (params.toString() ? '?' + params.toString() : '');
             });
-            
-            document.querySelectorAll('.category-group').forEach(category => {
-                const hasVisible = category.querySelector('.api-item[style=""]') || 
-                                 category.querySelector('.api-item:not([style*="none"])');
-                if (!hasVisible) category.style.display = 'none';
-            });
-            
-            if(noResults) noResults.classList.toggle('hidden', visibleCount > 0);
         });
     }
-
-    document.addEventListener('keydown', function(e) {
-        if (e.key === 'Enter' && e.target.matches('input[type="text"]')) {
-            if (e.target.closest('form')) {
-                const form = e.target.closest('form');
-                const formId = form.id;
-                const parts = formId.split('-');
-                if (parts.length >= 3) {
-                    const catIndex = parseInt(parts[1]);
-                    const endpointIndex = parseInt(parts[2]);
-                    if (!isNaN(catIndex) && !isNaN(endpointIndex) && 
-                        settings.categories && 
-                        settings.categories[catIndex] && 
-                        settings.categories[catIndex].items[endpointIndex]) {
-                        
-                        const item = settings.categories[catIndex].items[endpointIndex];
-                        executeRequest(e, catIndex, endpointIndex, item.method || 'GET', item.path, 'application/json');
-                    }
-                }
-            }
-        }
-    });
 }
 
-function toggleEndpoint(catIndex, endpointIndex) {
-    const row = document.getElementById(`endpoint-row-${catIndex}-${endpointIndex}`);
-    if(!row) return;
+async function executeApiRequest(catIndex, itemIndex) {
+    const item = settings.categories[catIndex].items[itemIndex];
+    const url = document.getElementById('full-url').innerText;
     
-    if (row.classList.contains('hidden')) {
-        document.querySelectorAll('tr[id^="endpoint-row-"]').forEach(r => r.classList.add('hidden'));
-        row.classList.remove('hidden');
-    } else {
-        row.classList.add('hidden');
-    }
-}
+    const resContainer = document.getElementById('response-container');
+    const resBody = document.getElementById('res-body');
+    const resStatus = document.getElementById('res-status');
+    const resTime = document.getElementById('res-time');
 
-function updateRequestUrl(catIndex, endpointIndex) {
-    const form = document.getElementById(`form-${catIndex}-${endpointIndex}`);
-    if (!form) return { url: '', hasErrors: false };
-    
-    const baseUrl = settings.categories[catIndex].items[endpointIndex].path.split('?')[0];
-    const queryParams = new URLSearchParams();
-    let hasErrors = false;
-    
-    const inputs = form.querySelectorAll('input[type="text"]');
-    inputs.forEach(input => {
-        const paramName = input.name;
-        const paramValue = input.value.trim();
-        input.classList.remove('border-red-500');
-        
-        if (input.required && !paramValue) {
-            hasErrors = true;
-        }
-        if (paramValue) {
-            queryParams.set(paramName, paramValue);
-        }
-    });
-    
-    const url = baseUrl + (queryParams.toString() ? '?' + queryParams.toString() : '');
-    const urlDisplay = document.getElementById(`url-display-${catIndex}-${endpointIndex}`);
-    if (urlDisplay) urlDisplay.textContent = url;
-    
-    return { url, hasErrors };
-}
+    resContainer.classList.remove('hidden');
+    resBody.innerHTML = '<div class="flex items-center justify-center py-10"><div class="loader"></div></div>';
+    resStatus.textContent = 'Loading...';
+    resStatus.className = 'text-[10px] font-bold px-2 py-1 rounded bg-blue-500/20 text-blue-400 animate-pulse';
+    resTime.textContent = '';
 
-async function executeRequest(event, catIndex, endpointIndex, method, path, produces) {
-    if(event) event.preventDefault();
-    const { url, hasErrors } = updateRequestUrl(catIndex, endpointIndex);
-    
-    if (hasErrors) {
-        showToast('Please fill in all required parameters', 'error');
-        return;
-    }
-    
-    const responseDiv = document.getElementById(`response-${catIndex}-${endpointIndex}`);
-    const responseContent = document.getElementById(`response-content-${catIndex}-${endpointIndex}`);
-    const responseStatus = document.getElementById(`response-status-${catIndex}-${endpointIndex}`);
-    const responseTime = document.getElementById(`response-time-${catIndex}-${endpointIndex}`);
-    
-    if(!responseDiv) return;
-    
-    responseDiv.classList.remove('hidden');
-    responseContent.innerHTML = '<div class="flex justify-center p-8"><div class="loader border-t-blue-500 rounded-full w-6 h-6 border-2 animate-spin"></div></div>';
-    responseStatus.textContent = 'Loading...';
-    responseStatus.className = 'text-[10px] px-2 py-1 rounded bg-slate-600 text-slate-300';
-    responseTime.textContent = '';
-    
-    const startTime = Date.now();
-    
+    const start = Date.now();
+
     try {
         const response = await fetch(url, {
-            method: method,
-            headers: { 'Accept': '*/*', 'User-Agent': 'CHISA-API-Docs' }
+            method: item.method || 'GET',
+            headers: { 'Accept': '*/*' }
         });
-        
-        const responseTimeMs = Date.now() - startTime;
-        
-        if (!response.ok) throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-        
+
+        const timeMs = Date.now() - start;
+        resTime.textContent = `${timeMs}ms`;
+        resStatus.textContent = `${response.status} ${response.statusText}`;
+        resStatus.className = response.ok ? 'text-[10px] font-bold px-2 py-1 rounded bg-green-500/20 text-green-400' : 'text-[10px] font-bold px-2 py-1 rounded bg-red-500/20 text-red-400';
+
+        if (!response.ok) throw new Error(`HTTP Error ${response.status}`);
+
         const contentType = response.headers.get('content-type') || '';
-        responseStatus.textContent = `${response.status} OK`;
-        responseStatus.className = 'text-[10px] font-bold px-2 py-1 rounded bg-green-500/20 text-green-400';
-        responseTime.textContent = `${responseTimeMs}ms`;
-        
-        if (contentType.startsWith('image/')) {
+
+        if (contentType.includes('application/json')) {
+            const json = await response.json();
+            resBody.innerHTML = `<pre class="text-green-300 font-mono text-xs leading-relaxed">${JSON.stringify(json, null, 4)}</pre>`;
+        } else if (contentType.startsWith('image/')) {
             const blob = await response.blob();
-            const blobUrl = URL.createObjectURL(blob);
-            responseContent.innerHTML = `<img src="${blobUrl}" class="w-full h-auto object-contain rounded">`;
-        } else if (contentType.includes('audio/')) {
-            const blob = await response.blob();
-            const blobUrl = URL.createObjectURL(blob);
-            responseContent.innerHTML = `<audio controls autoplay class="w-full"><source src="${blobUrl}" type="${contentType}"></audio>`;
+            const objUrl = URL.createObjectURL(blob);
+            resBody.innerHTML = `<img src="${objUrl}" class="w-full rounded-lg max-h-[400px] object-contain">`;
         } else if (contentType.includes('video/')) {
             const blob = await response.blob();
-            const blobUrl = URL.createObjectURL(blob);
-            responseContent.innerHTML = `<video controls autoplay class="w-full h-full object-contain rounded"><source src="${blobUrl}" type="${contentType}"></video>`;
-        } else if (contentType.includes('application/json')) {
-            const data = await response.json();
-            if (data && typeof data === 'object' && data.error) throw new Error(`API Error: ${data.error}`);
-            const formattedResponse = JSON.stringify(data, null, 2);
-            responseContent.innerHTML = `<pre class="text-xs p-4 overflow-x-auto text-blue-300 font-mono leading-relaxed">${escapeHtml(formattedResponse)}</pre>`;
+            const objUrl = URL.createObjectURL(blob);
+            resBody.innerHTML = `<video src="${objUrl}" controls autoplay class="w-full rounded-lg max-h-[400px]"></video>`;
+        } else if (contentType.includes('audio/')) {
+            const blob = await response.blob();
+            const objUrl = URL.createObjectURL(blob);
+            resBody.innerHTML = `<audio src="${objUrl}" controls autoplay class="w-full"></audio>`;
         } else {
             const text = await response.text();
-            responseContent.innerHTML = `<pre class="text-xs p-4 overflow-x-auto text-slate-300 font-mono">${escapeHtml(text)}</pre>`;
+            resBody.innerHTML = `<pre class="text-slate-300 font-mono text-xs leading-relaxed whitespace-pre-wrap">${escapeHtml(text)}</pre>`;
         }
-        
-        showToast('Request successful!', 'success');
-        
+
     } catch (error) {
-        console.error('API Request Error:', error);
-        const errorMessage = error.message || 'Unknown error occurred';
-        responseContent.innerHTML = `
-            <div class="text-center py-8">
-                <i class="fas fa-exclamation-triangle text-2xl text-red-400 mb-3"></i>
-                <div class="text-sm font-medium text-red-400">Error</div>
-                <div class="text-xs text-slate-400 mt-1">${escapeHtml(errorMessage)}</div>
-            </div>
-        `;
-        responseStatus.textContent = 'Error';
-        responseStatus.className = 'text-[10px] font-bold px-2 py-1 rounded bg-red-500/20 text-red-400';
-        responseTime.textContent = `${Date.now() - startTime}ms`;
-        showToast(`Request failed: ${errorMessage}`, 'error');
+        resStatus.textContent = 'Error';
+        resStatus.className = 'text-[10px] font-bold px-2 py-1 rounded bg-red-500/20 text-red-400';
+        resBody.innerHTML = `<div class="text-center text-red-400 py-6"><i class="fas fa-exclamation-triangle text-2xl mb-2"></i><p class="text-xs">${error.message}</p></div>`;
     }
 }
 
-function clearResponse(catIndex, endpointIndex) {
-    const form = document.getElementById(`form-${catIndex}-${endpointIndex}`);
-    const responseDiv = document.getElementById(`response-${catIndex}-${endpointIndex}`);
-    if(!form || !responseDiv) return;
-    
-    const inputs = form.querySelectorAll('input[type="text"]');
-    inputs.forEach(input => {
-        input.value = '';
-        input.classList.remove('border-red-500');
-    });
-    
-    responseDiv.classList.add('hidden');
-    updateRequestUrl(catIndex, endpointIndex);
-    showToast('Form cleared', 'info');
-}
-
-function copyUrl(catIndex, endpointIndex) {
-    const urlDisplay = document.getElementById(`url-display-${catIndex}-${endpointIndex}`);
-    if(!urlDisplay) return;
-    const url = window.location.origin + urlDisplay.textContent;
-    navigator.clipboard.writeText(url).then(() => {
-        showToast('URL copied!', 'success');
-    }).catch(() => showToast('Failed to copy URL', 'error'));
-}
-
-function copyResponse(catIndex, endpointIndex) {
-    const responseContent = document.getElementById(`response-content-${catIndex}-${endpointIndex}`);
-    if(!responseContent) return;
-    const text = responseContent.textContent;
+function copyToClipboard(text) {
     navigator.clipboard.writeText(text).then(() => {
-        showToast('Response copied!', 'success');
-    }).catch(() => showToast('Failed to copy response', 'error'));
-}
-
-function showToast(message, type = 'info') {
-    const existing = document.querySelector('.toast-custom');
-    if (existing) existing.remove();
-    
-    const toast = document.createElement('div');
-    toast.className = 'toast-custom fixed bottom-5 right-5 bg-[#1e293b] border border-slate-700 text-white px-4 py-3 rounded-lg shadow-2xl flex items-center gap-3 z-[9999] transform transition-all duration-300 translate-y-10 opacity-0';
-    
-    const icon = { 'success': 'fa-check-circle', 'error': 'fa-exclamation-circle', 'info': 'fa-info-circle' }[type] || 'fa-info-circle';
-    const color = { 'success': '#10b981', 'error': '#ef4444', 'info': '#3b82f6' }[type] || '#3b82f6';
-    
-    toast.innerHTML = `<i class="fas ${icon} text-lg" style="color: ${color}"></i><span class="text-sm font-medium">${message}</span>`;
-    document.body.appendChild(toast);
-    
-    setTimeout(() => {
-        toast.classList.remove('translate-y-10', 'opacity-0');
-        toast.classList.add('translate-y-0', 'opacity-100');
-    }, 10);
-
-    setTimeout(() => {
-        toast.classList.remove('translate-y-0', 'opacity-100');
-        toast.classList.add('translate-y-10', 'opacity-0');
-        setTimeout(() => toast.remove(), 300);
-    }, 3000);
+        const toast = document.createElement('div');
+        toast.className = 'fixed bottom-5 right-5 bg-green-500 text-white px-4 py-2 rounded-lg text-sm font-bold shadow-lg z-[9999] fade-in';
+        toast.innerHTML = '<i class="fas fa-check mr-1"></i> Tersalin!';
+        document.body.appendChild(toast);
+        setTimeout(() => toast.remove(), 2000);
+    });
 }
 
 function escapeHtml(text) {
@@ -602,34 +332,29 @@ function escapeHtml(text) {
     return div.innerHTML;
 }
 
-function showErrorMessage(err = undefined) {
-    const loadingScreen = document.getElementById('loadingScreen');
-    if(loadingScreen) {
-        loadingScreen.innerHTML = `
-            <div class="text-center">
-                <i class="fas fa-wifi text-3xl text-slate-400 mb-4"></i>
-                <p class="text-sm text-slate-400">${err ? err : "Using demo configuration"}</p>
-            </div>
-        `;
-    }
+function setupSearch() {
+    const input = document.getElementById('searchInput');
+    if (!input) return;
     
-    settings = getDefaultSettings();
-    setupUI();
-    loadAPIData();
-    setupEventListeners();
-    
-    setTimeout(() => {
-        if(loadingScreen) {
-            loadingScreen.style.opacity = '0';
-            setTimeout(() => loadingScreen.style.display = 'none', 300);
+    input.addEventListener('input', (e) => {
+        const term = e.target.value.toLowerCase().trim();
+        const catBtns = document.querySelectorAll('.category-btn');
+        
+        if (!term) {
+            catBtns.forEach(btn => btn.style.display = 'flex');
+            return;
         }
-    }, 1000);
+
+        settings.categories.forEach((cat, i) => {
+            const hasMatch = cat.name.toLowerCase().includes(term) || cat.items.some(item => item.name.toLowerCase().includes(term) || item.desc.toLowerCase().includes(term));
+            const btn = document.getElementById(`cat-btn-${i}`);
+            if (btn) btn.style.display = hasMatch ? 'flex' : 'none';
+        });
+    });
 }
 
-window.toggleCategory = function() {};
-window.toggleEndpoint = toggleEndpoint;
-window.executeRequest = executeRequest;
-window.clearResponse = clearResponse;
-window.copyUrl = copyUrl;
-window.copyResponse = copyResponse;
-window.updateRequestUrl = updateRequestUrl;
+function showErrorMessage(err) {
+    const loadingScreen = document.getElementById('loadingScreen');
+    if (loadingScreen) loadingScreen.style.display = 'none';
+    console.error('App Error:', err);
+}
