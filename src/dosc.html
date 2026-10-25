@@ -3,16 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Browse through our collection of API endpoints.">
-    <meta name="theme-color" content="#0a0f1b">
-    <title>CHISA • API</title>
+    <title>CHISA • API - Documentation</title>
     <link rel="icon" href="https://cdn.zass.in/lsXr7NCsX8.jpeg" type="image/jpeg">
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Ubuntu+Mono:ital,wght@0,400;0,700;1,400;1,700&family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Ubuntu+Mono:ital,wght@0,400;0,700;1,400;1,700&family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script>
         tailwind.config = {
             darkMode: 'class',
@@ -22,751 +20,223 @@
                         'mono': ['Ubuntu Mono', 'monospace'],
                         'sans': ['Inter', 'system-ui', 'sans-serif'],
                         'display': ['Space Grotesk', 'sans-serif']
-                    },
-                    fontSize: { 'xxs': ['0.65rem', { lineHeight: '0.9rem' }] }
+                    }
                 }
             }
         }
     </script>
-
     <style>
-        :root {
-            --bg-main:      #060914;
-            --bg-card:      #0d1425;
-            --bg-elevated:  #111a2e;
-            --accent-1:     #a855f7;
-            --accent-2:     #3b82f6;
-            --accent-3:     #22d3ee;
-            --accent-4:     #ec4899;
-            --text-main:    #f1f5ff;
-            --text-muted:   #94a3b8;
-            --text-dim:     #64748b;
-            --border-main:  rgba(148, 163, 184, 0.12);
-            --status-online: #22c55e;
-            --status-error:  #ef4444;
-        }
-
-        * { -webkit-tap-highlight-color: transparent; }
-        html { scroll-behavior: smooth; }
-
-        body {
-            background: var(--bg-main);
-            color: var(--text-main);
-            font-family: 'Inter', system-ui, sans-serif;
-            overflow-x: hidden;
-            position: relative;
-            min-height: 100vh;
-        }
-
-        body::before {
-            content: '';
-            position: fixed;
-            inset: 0;
-            z-index: 0;
-            pointer-events: none;
-            background:
-                radial-gradient(ellipse 80% 50% at 50% -20%, rgba(168, 85, 247, 0.15), transparent),
-                radial-gradient(ellipse 60% 50% at 80% 100%, rgba(59, 130, 246, 0.12), transparent),
-                radial-gradient(ellipse 50% 40% at 0% 60%, rgba(236, 72, 153, 0.08), transparent);
-        }
-
-        .bg-orbs {
-            position: fixed; inset: 0; z-index: 0;
-            pointer-events: none; overflow: hidden;
-        }
-        .orb {
-            position: absolute; border-radius: 50%;
-            filter: blur(90px); opacity: 0.35;
-            animation: float 24s ease-in-out infinite;
-        }
-        .orb-1 { width: 400px; height: 400px; background: var(--accent-1); top: -100px; left: -100px; }
-        .orb-2 { width: 480px; height: 480px; background: var(--accent-2); bottom: -160px; right: -160px; animation-delay: -8s; }
-        .orb-3 { width: 300px; height: 300px; background: var(--accent-4); top: 45%; right: 15%; animation-delay: -16s; opacity: 0.22; }
-        .orb-4 { width: 260px; height: 260px; background: var(--accent-3); top: 18%; left: 40%; animation-delay: -12s; opacity: 0.18; }
-        @keyframes float {
-            0%, 100% { transform: translate(0, 0) scale(1); }
-            33%      { transform: translate(50px, -70px) scale(1.12); }
-            66%      { transform: translate(-60px, 50px) scale(0.94); }
-        }
-
-        .bg-grid {
-            position: fixed; inset: 0; z-index: 1;
-            pointer-events: none;
-            background-image:
-                linear-gradient(rgba(59, 130, 246, 0.045) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(59, 130, 246, 0.045) 1px, transparent 1px);
-            background-size: 44px 44px;
-            mask-image: radial-gradient(ellipse at center, black 25%, transparent 75%);
-            -webkit-mask-image: radial-gradient(ellipse at center, black 25%, transparent 75%);
-        }
-
-        main, #loadingScreen, .navbar-fixed { position: relative; z-index: 2; }
-
-        .gradient-text {
-            background: linear-gradient(90deg, var(--accent-1), var(--accent-2), var(--accent-3), var(--accent-4), var(--accent-1));
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-            background-clip: text; background-size: 300% auto;
-            animation: shine 6s linear infinite;
-        }
-        @keyframes shine { to { background-position: 300% center; } }
-
-        .navbar-fixed {
-            background: rgba(6, 9, 20, 0.78);
-            backdrop-filter: blur(22px) saturate(180%);
-            -webkit-backdrop-filter: blur(22px) saturate(180%);
-            border-bottom: 1px solid var(--border-main);
-            box-shadow: 0 8px 32px -12px rgba(0,0,0,0.6);
-        }
-
-        .status-pill {
-            display: inline-flex; align-items: center; gap: 6px;
-            padding: 6px 14px; border-radius: 999px;
-            background: rgba(34, 197, 94, 0.12);
-            color: var(--status-online);
-            border: 1px solid rgba(34, 197, 94, 0.28);
-            font-size: 12px; font-weight: 600;
-            font-family: 'Space Grotesk', sans-serif;
-            box-shadow: 0 0 20px -6px rgba(34, 197, 94, 0.5);
-        }
-        .blink { animation: blink 2s infinite; }
-        @keyframes blink { 0%,100% { opacity: 1; } 50% { opacity: 0.55; } }
-
-        .hero-title {
-            font-family: 'Space Grotesk', sans-serif;
-            font-size: 30px;
-            font-weight: 800;
-            letter-spacing: -1px;
-            line-height: 1.1;
-        }
-        @media (min-width: 768px) { .hero-title { font-size: 40px; } }
-
-        .hero-icon {
-            width: 48px; height: 48px;
-            border-radius: 15px;
-            background: linear-gradient(135deg, var(--accent-1), var(--accent-2));
-            display: flex; align-items: center; justify-content: center;
-            box-shadow:
-                0 16px 40px -12px rgba(168,85,247,0.7),
-                0 10px 24px -10px rgba(59,130,246,0.6),
-                inset 0 1px 0 rgba(255,255,255,0.2);
-            position: relative;
-            overflow: hidden;
-            flex-shrink: 0;
-        }
-        .hero-icon::before {
-            content: '';
-            position: absolute; inset: 0;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.35), transparent);
-            transform: translateX(-100%);
-            animation: shimmer 3.5s infinite;
-        }
-        @keyframes shimmer { to { transform: translateX(100%); } }
-
-        .search-wrap {
-            margin-bottom: 22px;
-            animation: fadeUp 0.7s ease;
-        }
-        input#searchInput {
-            width: 100%;
-            padding: 15px 16px 15px 50px;
-            font-size: 14px;
-            border: 1px solid var(--border-main);
-            border-radius: 16px;
-            background: rgba(13, 20, 37, 0.9);
-            color: var(--text-main);
-            font-family: 'Inter', sans-serif;
-            transition: all 0.3s ease;
-            box-shadow: inset 0 1px 3px rgba(0,0,0,0.3);
-        }
-        input#searchInput::placeholder { color: var(--text-dim); }
-        input#searchInput:focus {
-            outline: none;
-            border-color: rgba(59, 130, 246, 0.6);
-            box-shadow:
-                0 0 0 4px rgba(59, 130, 246, 0.12),
-                inset 0 1px 3px rgba(0,0,0,0.3);
-            background: rgba(17, 26, 46, 0.95);
-        }
-
-        .big-thumb {
-            position: relative;
-            width: 100%;
-            aspect-ratio: 16 / 9;
-            border-radius: 28px;
-            overflow: hidden;
-            background: #000814;
-            margin-bottom: 28px;
-            box-shadow:
-                0 40px 80px -30px rgba(59, 130, 246, 0.55),
-                0 20px 40px -20px rgba(168, 85, 247, 0.4),
-                0 0 0 1px rgba(148, 163, 184, 0.12),
-                inset 0 1px 0 rgba(255, 255, 255, 0.06);
-            animation: fadeUp 0.8s ease;
-        }
-        .big-thumb::after {
-            content: '';
-            position: absolute; inset: 0;
-            border-radius: 28px;
-            padding: 1.5px;
-            background: linear-gradient(135deg, var(--accent-1), var(--accent-2), var(--accent-3), var(--accent-4), var(--accent-1));
-            background-size: 300% 300%;
-            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-            -webkit-mask-composite: xor;
-            mask-composite: exclude;
-            pointer-events: none;
-            opacity: 0.75;
-            animation: borderFlow 8s linear infinite;
-        }
-        @keyframes borderFlow {
-            0%   { background-position: 0% 50%; }
-            100% { background-position: 300% 50%; }
-        }
-        .big-thumb img {
-            width: 100%; height: 100%;
-            object-fit: cover;
-            display: block;
-            transition: transform 10s ease;
-        }
-        .big-thumb:hover img { transform: scale(1.06); }
-        .big-thumb-overlay {
-            position: absolute; inset: 0;
-            background: linear-gradient(180deg, rgba(6,9,20,0.1) 40%, rgba(6,9,20,0.8) 100%);
-            display: flex;
-            align-items: flex-end;
-            padding: 20px 24px;
-            pointer-events: none;
-        }
-        .big-thumb-label {
-            display: inline-flex; align-items: center; gap: 8px;
-            font-family: 'Space Grotesk', sans-serif;
-            font-size: 11px;
-            font-weight: 700;
-            letter-spacing: 1.6px;
-            text-transform: uppercase;
-            color: #fff;
-            padding: 7px 14px;
-            border-radius: 999px;
-            background: rgba(6, 9, 20, 0.7);
-            border: 1px solid rgba(148, 163, 184, 0.25);
-            backdrop-filter: blur(10px);
-        }
-        .big-thumb-label i { color: var(--accent-3); }
-
-        .menu-btn {
-            width: 40px; height: 40px;
-            border-radius: 12px;
-            display: flex; align-items: center; justify-content: center;
-            background: rgba(59, 130, 246, 0.1);
-            border: 1px solid rgba(59, 130, 246, 0.25);
-            color: var(--accent-3);
-            font-size: 16px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            flex-shrink: 0;
-        }
-        .menu-btn:hover {
-            background: rgba(59, 130, 246, 0.2);
-            transform: translateY(-2px);
-            box-shadow: 0 10px 24px -10px rgba(59,130,246,0.7);
-        }
-        .menu-btn.active {
-            background: linear-gradient(135deg, var(--accent-1), var(--accent-2));
-            color: #fff;
-            border-color: transparent;
-        }
-
-        .dropdown-panel {
-            position: absolute;
-            top: calc(100% + 10px);
-            right: 0;
-            width: min(92vw, 460px);
-            max-height: 70vh;
-            overflow-y: auto;
-            background: linear-gradient(165deg, rgba(17, 26, 46, 0.98) 0%, rgba(10, 16, 32, 0.98) 100%);
-            backdrop-filter: blur(20px);
-            border: 1px solid var(--border-main);
-            border-radius: 20px;
-            padding: 18px;
-            box-shadow:
-                0 40px 80px -30px rgba(0,0,0,0.9),
-                0 20px 40px -20px rgba(59,130,246,0.4),
-                0 0 0 1px rgba(148, 163, 184, 0.05) inset;
-            opacity: 0;
-            transform: translateY(-10px) scale(0.98);
-            pointer-events: none;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            z-index: 60;
-        }
-        .dropdown-panel.open {
-            opacity: 1;
-            transform: translateY(0) scale(1);
-            pointer-events: auto;
-        }
-        .dropdown-panel::-webkit-scrollbar { width: 6px; }
-        .dropdown-panel::-webkit-scrollbar-track { background: transparent; }
-        .dropdown-panel::-webkit-scrollbar-thumb {
-            background: linear-gradient(var(--accent-1), var(--accent-2));
-            border-radius: 3px;
-        }
-
-        .panel-title {
-            font-family: 'Space Grotesk', sans-serif;
-            font-size: 11px;
-            font-weight: 700;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            color: var(--text-dim);
-            margin-bottom: 10px;
-        }
-
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 8px;
-            margin-bottom: 16px;
-        }
-        .stat-card {
-            background: rgba(6, 9, 20, 0.7);
-            border: 1px solid var(--border-main);
-            border-radius: 12px;
-            padding: 12px 8px;
-            text-align: center;
-            position: relative;
-            overflow: hidden;
-            transition: all 0.3s ease;
-        }
-        .stat-card::before {
-            content: '';
-            position: absolute; top: 0; left: 0; right: 0; height: 2px;
-            background: linear-gradient(90deg, var(--accent-1), var(--accent-2), var(--accent-3));
-            opacity: 0.7;
-        }
-        .stat-card:hover {
-            transform: translateY(-2px);
-            border-color: rgba(59, 130, 246, 0.45);
-        }
-        .stat-card .stat-icon {
-            width: 28px; height: 28px;
-            margin: 0 auto 6px;
-            border-radius: 8px;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 12px;
-            background: rgba(59, 130, 246, 0.15);
-            color: var(--accent-3);
-        }
-        .stat-card .stat-val {
-            font-size: 17px;
-            font-weight: 800;
-            color: var(--text-main);
-            font-family: 'Space Grotesk', sans-serif;
-            line-height: 1;
-        }
-        .stat-card .stat-lbl {
-            font-size: 9px;
-            color: var(--text-dim);
-            text-transform: uppercase;
-            letter-spacing: 0.8px;
-            margin-top: 4px;
-            font-weight: 600;
-        }
-
-        .device-panel {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 6px;
-            margin-bottom: 16px;
-        }
-        .device-item {
-            background: rgba(6, 9, 20, 0.6);
-            border: 1px solid var(--border-main);
-            border-radius: 10px;
-            padding: 9px 12px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-        }
-        .device-item::after {
-            content: '';
-            position: absolute; left: 0; top: 0; bottom: 0;
-            width: 2px;
-            background: linear-gradient(180deg, var(--accent-1), var(--accent-2));
-            opacity: 0.8;
-        }
-        .device-item:hover {
-            border-color: rgba(59, 130, 246, 0.35);
-            background: rgba(17, 26, 46, 0.9);
-        }
-        .device-item .dev-icon {
-            width: 28px; height: 28px;
-            border-radius: 8px;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 12px;
-            flex-shrink: 0;
-        }
-        .dev-icon.battery { background: rgba(34, 197, 94, 0.15); color: #22c55e; }
-        .dev-icon.net     { background: rgba(59, 130, 246, 0.15); color: #3b82f6; }
-        .dev-icon.quota   { background: rgba(236, 72, 153, 0.15); color: #ec4899; }
-        .dev-text { min-width: 0; flex: 1; }
-        .dev-val {
-            font-size: 12.5px;
-            font-weight: 800;
-            font-family: 'Space Grotesk', sans-serif;
-            color: var(--text-main);
-            line-height: 1.1;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-        .dev-lbl {
-            font-size: 8.5px;
-            color: var(--text-dim);
-            text-transform: uppercase;
-            letter-spacing: 0.7px;
-            margin-top: 2px;
-            font-weight: 600;
-        }
-
-        .divider-line {
-            height: 1px;
-            background: linear-gradient(90deg, transparent, var(--border-main), transparent);
-            margin: 12px 0;
-        }
+        body { background: #0f172a; color: #e2e8f0; font-family: 'Inter', sans-serif; }
+        .sidebar { background: #1e293b; transition: transform 0.3s ease; }
+        .main-content { background: #0f172a; transition: margin-left 0.3s ease; }
+        
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #475569; }
 
         .loader {
-            width: 32px;
-            height: 32px;
-            border: 2.5px solid rgba(148, 163, 184, 0.15);
-            border-top: 2.5px solid var(--accent-2);
-            border-right: 2.5px solid var(--accent-1);
+            width: 32px; height: 32px;
+            border: 3px solid rgba(59, 130, 246, 0.2);
+            border-top: 3px solid #3b82f6;
             border-radius: 50%;
             animation: spin 1s linear infinite;
         }
         @keyframes spin { to { transform: rotate(360deg); } }
 
-        #loadingScreen {
-            position: fixed;
-            inset: 0;
-            background: var(--bg-main);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 50;
-            transition: opacity 0.5s ease;
-        }
-        #loadingScreen.hidden-fade {
-            opacity: 0;
-            pointer-events: none;
-        }
-
-        @keyframes fadeUp {
-            from { opacity: 0; transform: translateY(20px); }
-            to   { opacity: 1; transform: translateY(0); }
-        }
-
-        body::-webkit-scrollbar { width: 8px; }
-        body::-webkit-scrollbar-track { background: var(--bg-main); }
-        body::-webkit-scrollbar-thumb {
-            background: linear-gradient(var(--accent-1), var(--accent-2));
-            border-radius: 4px;
-            border: 2px solid var(--bg-main);
-        }
-
-        @media (prefers-reduced-motion: reduce) {
-            *, *::before, *::after {
-                animation-duration: 0.01ms !important;
-                animation-iteration-count: 1 !important;
-                transition-duration: 0.01ms !important;
-            }
+        #sidebar { transform: translateX(-100%); }
+        #sidebar.open { transform: translateX(0); }
+        @media (min-width: 1024px) {
+            #sidebar { transform: translateX(0); }
+            .main-content { margin-left: 250px; }
+            #sidebarOverlay { display: none !important; }
         }
     </style>
 </head>
+<body class="antialiased min-h-screen flex">
 
-<body class="antialiased min-h-screen">
-
-    <div class="bg-orbs">
-        <div class="orb orb-1"></div>
-        <div class="orb orb-2"></div>
-        <div class="orb orb-3"></div>
-        <div class="orb orb-4"></div>
-    </div>
-    <div class="bg-grid"></div>
-
-    <div id="loadingScreen" class="hidden-fade">
+    <div id="loadingScreen" class="fixed inset-0 z-[9999] bg-[#0f172a] flex items-center justify-center transition-opacity duration-500">
         <div class="text-center">
             <div class="loader mx-auto mb-4"></div>
-            <p class="text-slate-400 text-sm">Loading ...</p>
+            <p class="text-slate-400 text-sm animate-pulse">Memuat CHISA • API...</p>
         </div>
     </div>
 
-    <div class="navbar-fixed fixed top-0 left-0 right-0 z-40">
-        <div class="max-w-3xl mx-auto px-4">
-            <div class="flex items-center justify-between h-14 gap-3">
-                <span class="status-pill blink">
-                    <i class="fas fa-circle text-[6px]"></i>
-                    <span>Online</span>
-                </span>
+    <div id="sidebarOverlay" class="fixed inset-0 bg-black/50 z-40 hidden backdrop-blur-sm"></div>
 
-                <div class="flex items-center gap-2 relative">
-                    <a id="contactLink" href="https://wa.me/6285715989482"
-                       target="_blank"
-                       class="text-[12.5px] flex items-center gap-2 px-3 py-1.5 rounded-full font-semibold transition-all duration-200"
-                       style="color: var(--text-muted); background: rgba(34,197,94,0.08); border: 1px solid rgba(34,197,94,0.22); font-family: 'Space Grotesk', sans-serif;">
-                        <i class="fab fa-whatsapp" style="color: var(--status-online); font-size: 13px;"></i>
-                        <span class="hidden sm:inline">Information</span>
+    <aside id="sidebar" class="sidebar fixed top-0 left-0 h-full w-[250px] z-50 flex flex-col shadow-2xl">
+        <div class="h-16 flex items-center px-6 border-b border-slate-700/50">
+            <span class="text-xl font-bold text-slate-300 font-display">BOTCAHX</span>
+        </div>
+
+        <div class="flex-1 overflow-y-auto py-4 px-3 space-y-6">
+            <div>
+                <p class="px-3 text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-2">Pages</p>
+                <nav class="space-y-1">
+                    <a href="/" class="flex items-center gap-3 px-3 py-2 text-sm text-slate-400 hover:text-white hover:bg-slate-800 rounded-lg transition-colors">
+                        <i class="fas fa-th-large w-5 text-center"></i> All Feature
                     </a>
+                    <a href="#" class="flex items-center gap-3 px-3 py-2 text-sm text-slate-400 hover:text-white hover:bg-slate-800 rounded-lg transition-colors">
+                        <i class="fas fa-code-branch w-5 text-center"></i> Changelog
+                    </a>
+                    <a href="#" class="flex items-center gap-3 px-3 py-2 text-sm text-slate-400 hover:text-white hover:bg-slate-800 rounded-lg transition-colors">
+                        <i class="fas fa-layer-group w-5 text-center"></i> Dashboard
+                    </a>
+                    <a href="#" class="flex items-center gap-3 px-3 py-2 text-sm text-slate-400 hover:text-white hover:bg-slate-800 rounded-lg transition-colors">
+                        <i class="fas fa-hand-holding-usd w-5 text-center"></i> Donasi
+                    </a>
+                </nav>
+            </div>
 
-                    <button id="menuBtn" class="menu-btn" aria-label="Open menu" aria-expanded="false">
-                        <i class="fas fa-ellipsis-v"></i>
-                    </button>
+            <div>
+                <p class="px-3 text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-2">API Feature</p>
+                <nav class="space-y-1">
+                    <a href="#" class="flex items-center gap-3 px-3 py-2 text-sm text-white bg-slate-800/80 border-l-2 border-blue-500 rounded-r-lg transition-colors">
+                        <i class="fas fa-book w-5 text-center text-blue-400"></i> <span class="font-medium">Asupan API</span>
+                    </a>
+                    <a href="#" class="flex items-center gap-3 px-3 py-2 text-sm text-slate-400 hover:text-white hover:bg-slate-800 rounded-lg transition-colors">
+                        <i class="fas fa-download w-5 text-center"></i> Download
+                    </a>
+                    <a href="#" class="flex items-center gap-3 px-3 py-2 text-sm text-slate-400 hover:text-white hover:bg-slate-800 rounded-lg transition-colors">
+                        <i class="fas fa-smile w-5 text-center"></i> Emoji
+                    </a>
+                    <a href="#" class="flex items-center gap-3 px-3 py-2 text-sm text-slate-400 hover:text-white hover:bg-slate-800 rounded-lg transition-colors">
+                        <i class="fas fa-gamepad w-5 text-center"></i> Game
+                    </a>
+                </nav>
+            </div>
+        </div>
 
-                    <div id="dropdownPanel" class="dropdown-panel">
-                        <div class="panel-title">
-                            <i class="fas fa-chart-simple mr-1"></i> Statistics
-                        </div>
-                        <div class="stats-grid">
-                            <div class="stat-card">
-                                <div class="stat-icon"><i class="fas fa-plug"></i></div>
-                                <div class="stat-val" id="totalApis">0</div>
-                                <div class="stat-lbl">Endpoints</div>
-                            </div>
-                            <div class="stat-card">
-                                <div class="stat-icon"><i class="fas fa-layer-group"></i></div>
-                                <div class="stat-val" id="totalCategories">0</div>
-                                <div class="stat-lbl">Categories</div>
-                            </div>
-                            <div class="stat-card">
-                                <div class="stat-icon"><i class="fas fa-battery-three-quarters"></i></div>
-                                <div class="stat-val" id="batteryLevel">100%</div>
-                                <div class="stat-lbl">Battery</div>
-                            </div>
-                        </div>
+        <div class="p-4 border-t border-slate-700/50 bg-[#0f172a]">
+            <div class="text-[11px] text-slate-400 flex flex-col gap-1">
+                <div class="flex justify-between items-center"><span><i class="fas fa-battery-half w-4"></i> Baterai</span> <span id="batSidebar" class="text-slate-200">-</span></div>
+                <div class="flex justify-between items-center"><span><i class="fas fa-wifi w-4"></i> Jaringan</span> <span id="netSidebar" class="text-slate-200">-</span></div>
+            </div>
+        </div>
+    </aside>
 
-                        <div class="panel-title">
-                            <i class="fas fa-mobile-screen mr-1"></i> Device Info
-                        </div>
-                        <div class="device-panel">
-                            <div class="device-item">
-                                <div class="dev-icon battery"><i class="fas fa-battery-full"></i></div>
-                                <div class="dev-text">
-                                    <div class="dev-val" id="batteryDetail">--</div>
-                                    <div class="dev-lbl">Baterai</div>
-                                </div>
-                            </div>
-                            <div class="device-item">
-                                <div class="dev-icon net"><i class="fas fa-wifi"></i></div>
-                                <div class="dev-text">
-                                    <div class="dev-val" id="networkType">--</div>
-                                    <div class="dev-lbl">Jaringan</div>
-                                </div>
-                            </div>
-                            <div class="device-item">
-                                <div class="dev-icon quota"><i class="fas fa-database"></i></div>
-                                <div class="dev-text">
-                                    <div class="dev-val" id="quotaInfo">--</div>
-                                    <div class="dev-lbl">Sisa Kuota</div>
-                                </div>
-                            </div>
-                        </div>
+    <main class="main-content flex-1 flex flex-col min-h-screen w-full relative">
+        
+        <header class="h-16 bg-[#1e293b] border-b border-slate-700/50 flex items-center justify-between px-4 sm:px-6 sticky top-0 z-30">
+            <div class="flex items-center gap-4">
+                <button id="menuBtnMobile" class="text-slate-400 hover:text-white lg:hidden">
+                    <i class="fas fa-bars text-lg"></i>
+                </button>
+                <h1 class="text-sm font-semibold text-slate-300 hidden sm:block">Documentation / <span class="text-white">Asupan API</span></h1>
+            </div>
+            
+            <div class="flex items-center gap-4">
+                <div class="hidden md:flex items-center gap-3 px-3 py-1.5 bg-slate-800 rounded-full border border-slate-700 text-xs text-slate-300">
+                    <span title="Baterai"><i class="fas fa-battery-full text-green-400"></i> <span id="batTop">-</span></span>
+                    <span class="w-px h-3 bg-slate-600"></span>
+                    <span title="Network"><i class="fas fa-signal text-blue-400"></i> <span id="netTop">-</span></span>
+                    <span class="w-px h-3 bg-slate-600"></span>
+                    <span title="Penyimpanan"><i class="fas fa-database text-pink-400"></i> <span id="storageTop">-</span></span>
+                </div>
 
-                        <div class="divider-line"></div>
+                <a href="https://wa.me/6285715989482" target="_blank" class="text-slate-400 hover:text-green-400 transition-colors">
+                    <i class="fab fa-whatsapp text-xl"></i>
+                </a>
+            </div>
+        </header>
 
-                        <div class="panel-title">
-                            <i class="fas fa-list mr-1"></i> API Endpoints
+        <div class="p-4 sm:p-6 flex-1">
+            <div class="max-w-6xl mx-auto">
+                
+                <div class="mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <div>
+                        <h2 id="titleApi" class="text-2xl font-bold text-white font-display">CHISA • API</h2>
+                        <p id="descApi" class="text-sm text-slate-400 mt-1">Interactive API documentation with real-time testing</p>
+                    </div>
+                    
+                    <div class="relative w-full sm:w-72">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <i class="fas fa-search text-slate-500 text-sm"></i>
                         </div>
-                        <div id="content" class="space-y-3">
-                            <div id="noResults" class="text-center py-8 hidden">
-                                <i class="fas fa-search text-xl text-slate-500 mb-2"></i>
-                                <h3 class="text-xs text-slate-400 mb-1">No results found</h3>
-                                <p class="text-xxs text-slate-500">Try different keywords</p>
-                            </div>
-                            <div id="apiList" class="space-y-2"></div>
-                        </div>
+                        <input type="text" id="searchInput" placeholder="Cari endpoint..." class="w-full pl-9 pr-4 py-2 bg-[#1e293b] border border-slate-700 text-sm rounded-lg focus:outline-none focus:border-blue-500 text-slate-200 transition-colors">
                     </div>
                 </div>
-            </div>
-        </div>
-    </div>
 
-    <main class="max-w-3xl mx-auto px-6 sm:px-8 py-16 relative">
-        <div class="h-10"></div>
-
-        <div class="text-left mb-6">
-            <div class="flex items-center gap-3 mb-3">
-                <div class="hero-icon">
-                    <i class="fas fa-code text-white text-lg"></i>
+                <div class="hidden">
+                    <span id="totalApis">0</span>
+                    <span id="totalCategories">0</span>
+                    <span id="batteryLevel">0</span>
+                    <span id="batteryDetail">0</span>
+                    <span id="networkType">0</span>
+                    <span id="quotaInfo">0</span>
                 </div>
-                <h1 id="titleApi" class="hero-title gradient-text">CHISA • API</h1>
-            </div>
-            <p id="descApi" class="text-slate-400 text-[13.5px] leading-relaxed max-w-xl">
-                Welcome to CHISA • API documentation. Explore and test our complete collection of API endpoints.
-            </p>
-        </div>
 
-        <div class="search-wrap">
-            <div class="relative">
-                <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                    <span class="material-icons text-slate-500 text-lg">search</span>
+                <div id="content" class="w-full">
+                    <div id="noResults" class="hidden text-center py-12">
+                        <i class="fas fa-search text-4xl text-slate-600 mb-3"></i>
+                        <p class="text-slate-400">Endpoint tidak ditemukan.</p>
+                    </div>
+                    
+                    <div id="apiList" class="w-full">
+                    </div>
                 </div>
-                <input
-                    type="text"
-                    id="searchInput"
-                    placeholder="Search API endpoints..."
-                >
+
             </div>
         </div>
 
-        <div class="big-thumb">
-            <img src="https://media.giphy.com/media/qgQUggAC3Pfv687qPC/giphy.gif" alt="Coding Computer" onerror="this.src='https://media.giphy.com/media/L1R1tvI9svkIWwpVYr/giphy.gif'">
-            <div class="big-thumb-overlay">
-                <span class="big-thumb-label">
-                    <i class="fas fa-bolt"></i>
-                    <span>CHISA • API</span>
-                </span>
-            </div>
-        </div>
-
-        <div class="text-center py-8 text-slate-500 text-[13px]" style="font-family: 'Space Grotesk', sans-serif;">
-            <i class="fas fa-hand-pointer mr-2"></i>
-            Klik menu <i class="fas fa-ellipsis-v mx-1"></i> di pojok kanan atas untuk melihat API endpoints
-        </div>
-
-        <footer class="mt-8 pt-6" style="border-top: 1px solid var(--border-main);">
-            <p id="footer" class="text-slate-400 text-[13.5px] text-center mx-auto" style="font-family: 'Space Grotesk', sans-serif;">
-                © 2025 <span class="gradient-text font-bold">CHISA • API</span> • v1.0.0
-            </p>
+        <footer class="mt-auto py-4 text-center border-t border-slate-800">
+            <p id="footer" class="text-xs text-slate-500">© 2025 CHISA • API</p>
         </footer>
 
     </main>
 
     <script>
-        function updateBatteryStatus() {
-            if ('getBattery' in navigator) {
-                navigator.getBattery().then(function (battery) {
-                    updateBatteryInfo(battery);
-                    battery.addEventListener('levelchange', () => updateBatteryInfo(battery));
-                    battery.addEventListener('chargingchange', () => updateBatteryInfo(battery));
-                });
-            } else {
-                updateBatteryUI(Math.floor(Math.random() * 100) + 1, true);
-            }
-        }
-        function updateBatteryInfo(battery) {
-            updateBatteryUI(Math.round(battery.level * 100), battery.charging);
-        }
-        function updateBatteryUI(level, isCharging) {
-            var el = document.querySelector('#batteryLevel');
-            if (el) el.textContent = level + '%';
-            var detail = document.querySelector('#batteryDetail');
-            if (detail) detail.textContent = level + '%' + (isCharging ? ' ⚡' : '');
-            var icon = document.querySelector('.dev-icon.battery i');
-            if (icon) {
-                icon.className = 'fas ' + (
-                    level > 80 ? 'fa-battery-full' :
-                    level > 60 ? 'fa-battery-three-quarters' :
-                    level > 40 ? 'fa-battery-half' :
-                    level > 20 ? 'fa-battery-quarter' :
-                    'fa-battery-empty'
-                );
-            }
-        }
-
-        function updateNetworkInfo() {
-            var netEl = document.querySelector('#networkType');
-            if (!netEl) return;
-            var conn = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
-            if (!conn) { netEl.textContent = 'Tidak tersedia'; return; }
-            var typeMap = { 'slow-2g': 'Slow 2G', '2g': '2G', '3g': '3G', '4g': '4G', '5g': '5G' };
-            var type = typeMap[conn.effectiveType] || conn.effectiveType || 'Unknown';
-            var downlink = conn.downlink ? conn.downlink + ' Mbps' : '';
-            netEl.textContent = type + (downlink ? ' • ' + downlink : '');
-            var icon = document.querySelector('.dev-icon.net i');
-            if (icon) {
-                icon.className = 'fas ' + (
-                    conn.type === 'wifi' ? 'fa-wifi' :
-                    conn.type === 'cellular' ? 'fa-signal' :
-                    'fa-network-wired'
-                );
-            }
-            conn.addEventListener('change', updateNetworkInfo);
-        }
-
-        function updateQuotaInfo() {
-            var quotaEl = document.querySelector('#quotaInfo');
-            if (!quotaEl) return;
-            if (navigator.storage && navigator.storage.estimate) {
-                navigator.storage.estimate().then(function (estimate) {
-                    var used = estimate.usage || 0;
-                    var quota = estimate.quota || 0;
-                    if (quota > 0) {
-                        var usedMB = (used / (1024 * 1024)).toFixed(1);
-                        var quotaMB = (quota / (1024 * 1024)).toFixed(0);
-                        var freeMB = ((quota - used) / (1024 * 1024)).toFixed(0);
-                        quotaEl.textContent = freeMB + ' MB';
-                        quotaEl.title = 'Terpakai: ' + usedMB + ' MB / Total: ' + quotaMB + ' MB';
-                    } else {
-                        quotaEl.textContent = 'Tidak tersedia';
-                    }
-                }).catch(function () {
-                    quotaEl.textContent = 'Tidak tersedia';
-                });
-            } else {
-                quotaEl.textContent = 'Tidak tersedia';
-            }
-        }
-
-        document.addEventListener('DOMContentLoaded', function () {
-            updateBatteryStatus();
-            setInterval(updateBatteryStatus, 30000);
-            updateNetworkInfo();
-            updateQuotaInfo();
-
-            var ls = document.getElementById('loadingScreen');
-            if (ls) {
-                ls.classList.add('hidden-fade');
-                setTimeout(function () {
-                    if (ls.parentNode) ls.remove();
-                }, 600);
-            }
-
-            var menuBtn = document.getElementById('menuBtn');
-            var panel = document.getElementById('dropdownPanel');
-            if (menuBtn && panel) {
-                menuBtn.addEventListener('click', function (e) {
-                    e.stopPropagation();
-                    var isOpen = panel.classList.toggle('open');
-                    menuBtn.classList.toggle('active', isOpen);
-                    menuBtn.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
-                    var icon = menuBtn.querySelector('i');
-                    if (icon) icon.className = isOpen ? 'fas fa-xmark' : 'fas fa-ellipsis-v';
-                });
-                document.addEventListener('click', function (e) {
-                    if (!panel.contains(e.target) && !menuBtn.contains(e.target)) {
-                        panel.classList.remove('open');
-                        menuBtn.classList.remove('active');
-                        menuBtn.setAttribute('aria-expanded', 'false');
-                        var icon = menuBtn.querySelector('i');
-                        if (icon) icon.className = 'fas fa-ellipsis-v';
-                    }
-                });
-                document.addEventListener('keydown', function (e) {
-                    if (e.key === 'Escape') {
-                        panel.classList.remove('open');
-                        menuBtn.classList.remove('active');
-                        menuBtn.setAttribute('aria-expanded', 'false');
-                        var icon = menuBtn.querySelector('i');
-                        if (icon) icon.className = 'fas fa-ellipsis-v';
-                    }
-                });
-            }
+        document.getElementById('menuBtnMobile').addEventListener('click', function() {
+            document.getElementById('sidebar').classList.add('open');
+            document.getElementById('sidebarOverlay').classList.remove('hidden');
+        });
+        document.getElementById('sidebarOverlay').addEventListener('click', function() {
+            document.getElementById('sidebar').classList.remove('open');
+            document.getElementById('sidebarOverlay').classList.add('hidden');
         });
 
-        window.addEventListener('online', updateNetworkInfo);
-        window.addEventListener('offline', function () {
-            var netEl = document.querySelector('#networkType');
-            if (netEl) netEl.textContent = 'Offline';
+        function updateDeviceInfo() {
+            if ('getBattery' in navigator) {
+                navigator.getBattery().then(function(battery) {
+                    const level = Math.round(battery.level * 100);
+                    const status = level + '%' + (battery.charging ? ' ⚡' : '');
+                    
+                    if(document.getElementById('batSidebar')) document.getElementById('batSidebar').textContent = status;
+                    if(document.getElementById('batTop')) document.getElementById('batTop').textContent = status;
+                    if(document.getElementById('batteryDetail')) document.getElementById('batteryDetail').textContent = status;
+                });
+            }
+
+            if (navigator.connection) {
+                const type = navigator.connection.effectiveType || 'Unknown';
+                const dl = navigator.connection.downlink ? navigator.connection.downlink + ' Mbps' : '';
+                if(document.getElementById('netSidebar')) document.getElementById('netSidebar').textContent = type.toUpperCase();
+                if(document.getElementById('netTop')) document.getElementById('netTop').textContent = type.toUpperCase();
+                if(document.getElementById('networkType')) document.getElementById('networkType').textContent = type + ' ' + dl;
+            }
+
+            if (navigator.storage && navigator.storage.estimate) {
+                navigator.storage.estimate().then(function(estimate) {
+                    const quota = estimate.quota || 0;
+                    const used = estimate.usage || 0;
+                    const freeMB = ((quota - used) / (1024 * 1024)).toFixed(0);
+                    if(document.getElementById('storageTop')) document.getElementById('storageTop').textContent = freeMB + ' MB';
+                    if(document.getElementById('quotaInfo')) document.getElementById('quotaInfo').textContent = freeMB + ' MB';
+                });
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            updateDeviceInfo();
+            setInterval(updateDeviceInfo, 30000);
+            document.querySelectorAll('#sidebar nav a').forEach(link => {
+                link.addEventListener('click', () => {
+                    if(window.innerWidth < 1024) {
+                        document.getElementById('sidebar').classList.remove('open');
+                        document.getElementById('sidebarOverlay').classList.add('hidden');
+                    }
+                });
+            });
         });
     </script>
 
