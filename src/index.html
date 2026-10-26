@@ -53,7 +53,6 @@ body{
   position:relative;
 }
 
-/* --- backdrop --- */
 .backdrop{position:fixed;inset:0;z-index:0;pointer-events:none}
 .backdrop::before{
   content:'';position:absolute;inset:0;
@@ -76,7 +75,6 @@ body{
 
 main,#loader,.topbar{position:relative;z-index:2}
 
-/* --- loader --- */
 #loader{
   position:fixed;inset:0;z-index:9999;
   display:flex;align-items:center;justify-content:center;
@@ -132,7 +130,6 @@ main,#loader,.topbar{position:relative;z-index:2}
 .meta-row .pct{color:var(--lime);font-weight:700}
 .meta-row .pct.done{color:var(--ok)}
 
-/* --- topbar --- */
 .topbar{
   position:fixed;top:0;left:0;right:0;z-index:50;
   background:rgba(7,8,13,.7);
@@ -179,10 +176,8 @@ main,#loader,.topbar{position:relative;z-index:2}
 }
 .top-link:hover{color:var(--txt);border-color:var(--line-strong);background:rgba(255,255,255,.06)}
 
-/* --- layout --- */
 .wrap{max-width:1080px;margin:0 auto;padding:0 20px}
 
-/* --- intro / hero --- */
 .intro{padding:118px 0 44px;opacity:0;transform:translateY(24px);transition:.8s ease}
 .intro.in{opacity:1;transform:none}
 .eyebrow{
@@ -230,7 +225,6 @@ main,#loader,.topbar{position:relative;z-index:2}
 }
 .cta-ghost:hover{color:var(--txt);border-color:var(--line-strong);background:rgba(255,255,255,.06);transform:translateY(-3px)}
 
-/* --- hero visual --- */
 .visual{
   position:relative;border-radius:20px;overflow:hidden;
   border:1px solid var(--line);
@@ -258,7 +252,6 @@ main,#loader,.topbar{position:relative;z-index:2}
   animation:bob 5s ease-in-out infinite;
 }
 
-/* --- stats strip --- */
 .stats{
   display:grid;grid-template-columns:repeat(4,1fr);gap:12px;
   margin-bottom:64px;
@@ -280,7 +273,6 @@ main,#loader,.topbar{position:relative;z-index:2}
 .stat:nth-child(3) b{color:var(--violet)}
 .stat:nth-child(4) b{color:var(--coral)}
 
-/* --- credits header --- */
 .credits-head{margin-bottom:36px}
 .credits-head h2{
   font-family:'Outfit',sans-serif;font-weight:800;
@@ -289,7 +281,6 @@ main,#loader,.topbar{position:relative;z-index:2}
 .credits-head h2 .accent{color:var(--lime)}
 .credits-head p{font-size:14px;line-height:1.7;color:var(--txt-2);max-width:540px}
 
-/* --- credit cards (horizontal layout, different style) --- */
 .credits{display:flex;flex-direction:column;gap:16px;margin-bottom:56px}
 
 .credit{
@@ -378,7 +369,6 @@ main,#loader,.topbar{position:relative;z-index:2}
 .c-btn.gc:hover{color:var(--ok);border-color:rgba(74,222,128,.45);background:rgba(74,222,128,.08)}
 .c-btn.ig:hover{color:#e1306c;border-color:rgba(225,48,108,.45);background:rgba(225,48,108,.08)}
 
-/* --- closing --- */
 .closing{
   text-align:center;padding:48px 20px 40px;
   border-top:1px solid var(--line);
@@ -414,12 +404,10 @@ main,#loader,.topbar{position:relative;z-index:2}
 <div class="dot-field"></div>
 <div class="grain"></div>
 
-<!-- LOADER -->
 <div id="loader">
   <div class="loader-box">
     <div class="loader-screen">
-      <img src="https://media.giphy.com/media/qgQUggAC3Pfv687qPC/giphy.gif" alt="Loading"
-           onerror="this.src='https://media.giphy.com/media/L1R1tvI9svkIWwpVYr/giphy.gif'">
+      <img src="https://media.giphy.com/media/qgQUggAC3Pfv687qPC/giphy.gif" alt="Loading" onerror="this.src='https://media.giphy.com/media/L1R1tvI9svkIWwpVYr/giphy.gif'">
     </div>
     <div class="loader-name">CHISA <span style="color:var(--txt-3);font-weight:500">API</span></div>
     <div class="loader-tag">System Boot</div>
@@ -431,7 +419,6 @@ main,#loader,.topbar{position:relative;z-index:2}
   </div>
 </div>
 
-<!-- TOPBAR -->
 <div class="topbar" id="topbar">
   <div class="topbar-in">
     <div class="brand">
@@ -450,8 +437,6 @@ main,#loader,.topbar{position:relative;z-index:2}
 
 <main>
   <div class="wrap">
-
-    <!-- INTRO -->
     <section class="intro" id="intro">
       <div class="eyebrow"><i class="fas fa-bolt"></i> Endpoint Publik · v2</div>
       <h1 class="headline">
@@ -463,7 +448,8 @@ main,#loader,.topbar{position:relative;z-index:2}
         Cukup buka dokumentasi, pilih endpoint, lalu integrasikan ke proyekmu.
       </p>
       <div class="cta-row">
-        <a href="./dosc" onclick="return goDocs(event)" class="cta cta-primary">
+        <!-- Tombol menuju dosc.html -->
+        <a href="dosc.html" class="cta cta-primary">
           <i class="fas fa-book-open"></i>
           <span>Buka Dokumentasi</span>
           <i class="fas fa-arrow-right arr"></i>
@@ -475,16 +461,13 @@ main,#loader,.topbar{position:relative;z-index:2}
       </div>
     </section>
 
-    <!-- VISUAL -->
     <div class="visual" id="visual">
       <img class="bg" src="https://images.unsplash.com/photo-1555066931-4365d14bab8c?q=80&w=1920&auto=format&fit=crop" alt="" onerror="this.style.display='none'">
       <div class="veil">
-        <img src="https://media.giphy.com/media/qgQUggAC3Pfv687qPC/giphy.gif" alt="Coding"
-             onerror="this.src='https://media.giphy.com/media/L1R1tvI9svkIWwpVYr/giphy.gif'">
+        <img src="https://media.giphy.com/media/qgQUggAC3Pfv687qPC/giphy.gif" alt="Coding" onerror="this.src='https://media.giphy.com/media/L1R1tvI9svkIWwpVYr/giphy.gif'">
       </div>
     </div>
 
-    <!-- STATS -->
     <section class="stats">
       <div class="stat"><b>120+</b><span>Endpoint</span></div>
       <div class="stat"><b>99.9%</b><span>Uptime</span></div>
@@ -492,16 +475,12 @@ main,#loader,.topbar{position:relative;z-index:2}
       <div class="stat"><b>24/7</b><span>Support</span></div>
     </section>
 
-    <!-- CREDITS -->
     <section>
       <div class="credits-head">
         <h2>Orang di balik <span class="accent">CHISA</span></h2>
         <p>Proyek ini hidup karena kerja keras, waktu, dan dedikasi mereka. Terima kasih sebesar-besarnya.</p>
       </div>
-
       <div class="credits">
-
-        <!-- KENZ -->
         <article class="credit">
           <div class="c-avatar a1">K<span class="dot"></span></div>
           <div class="c-body">
@@ -519,8 +498,6 @@ main,#loader,.topbar{position:relative;z-index:2}
             <a href="https://chat.whatsapp.com/C5O7laRDo8p9PqwRRnFdXN" target="_blank" class="c-btn gc"><i class="fas fa-users"></i><span>Grup</span></a>
           </div>
         </article>
-
-        <!-- 8KY -->
         <article class="credit">
           <div class="c-avatar a2">8<span class="dot"></span></div>
           <div class="c-body">
@@ -538,8 +515,6 @@ main,#loader,.topbar{position:relative;z-index:2}
             <a href="https://chat.whatsapp.com/JoxqrurgTGk5zvanX1ogMi" target="_blank" class="c-btn gc"><i class="fas fa-users"></i><span>Grup</span></a>
           </div>
         </article>
-
-        <!-- KYXXZZ -->
         <article class="credit">
           <div class="c-avatar a3">K<span class="dot"></span></div>
           <div class="c-body">
@@ -557,31 +532,17 @@ main,#loader,.topbar{position:relative;z-index:2}
             <a href="https://www.instagram.com/kyxzz67" target="_blank" class="c-btn ig"><i class="fab fa-instagram"></i><span>IG</span></a>
           </div>
         </article>
-
       </div>
     </section>
 
-    <!-- CLOSING -->
     <div class="closing">
-      <p>
-        Dibuat dengan <span class="heart">♥</span> oleh <strong>CHISA</strong><br>
-        Terima kasih untuk <strong>Kenz Developer</strong>, <strong>8ky Pengembang</strong>, dan <strong>Kyyxzz</strong>.
-      </p>
+      <p>Dibuat dengan <span class="heart">♥</span> oleh <strong>CHISA</strong><br>Terima kasih untuk <strong>Kenz Developer</strong>, <strong>8ky Pengembang</strong>, dan <strong>Kyyxzz</strong>.</p>
       <div class="sign">CHISA API · v2.0.0 · <b>© 2025</b></div>
     </div>
-
   </div>
 </main>
 
 <script>
-function goDocs(e){
-  e.preventDefault();
-  var w=window.open('./dosc','_blank','noopener');
-  if(!w){window.location.href='./dosc';return false}
-  setTimeout(function(){try{if(!w.location||w.closed)window.location.href='./dosc'}catch(err){}},1500);
-  return false;
-}
-
 (function loader(){
   var fill=document.getElementById('barFill');
   var pct=document.getElementById('pctText');
@@ -632,6 +593,5 @@ function goDocs(e){
   setTimeout(run,250);
 })();
 </script>
-
 </body>
 </html>

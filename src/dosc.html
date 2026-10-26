@@ -1,102 +1,113 @@
 <!DOCTYPE html>
-<html lang="en" class="dark">
+<html lang="id" class="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CHISA • API - Documentation</title>
     <link rel="icon" href="https://cdn.zass.in/lsXr7NCsX8.jpeg" type="image/jpeg">
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Ubuntu+Mono&family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono&display=swap" rel="stylesheet">
     <script>
         tailwind.config = {
             darkMode: 'class',
             theme: {
                 extend: {
                     fontFamily: {
-                        'mono': ['Ubuntu Mono', 'monospace'],
                         'sans': ['Inter', 'system-ui', 'sans-serif'],
-                        'display': ['Space Grotesk', 'sans-serif']
+                        'display': ['Space Grotesk', 'sans-serif'],
+                        'mono': ['JetBrains Mono', 'monospace']
                     }
                 }
             }
         }
     </script>
     <style>
-        body { background: #060914; color: #e2e8f0; font-family: 'Inter', sans-serif; overflow-x: hidden; }
+        body { background: #04070f; color: #e2e8f0; font-family: 'Inter', sans-serif; overflow-x: hidden; }
+        
+        /* Background Orbs */
         .bg-orbs { position: fixed; inset: 0; z-index: -1; overflow: hidden; pointer-events: none; }
-        .orb { position: absolute; border-radius: 50%; filter: blur(100px); opacity: 0.3; }
-        .orb-1 { width: 400px; height: 400px; background: #a855f7; top: -100px; left: -100px; }
-        .orb-2 { width: 500px; height: 500px; background: #3b82f6; bottom: -150px; right: -150px; }
+        .orb { position: absolute; border-radius: 50%; filter: blur(120px); opacity: 0.25; }
+        .orb-1 { width: 500px; height: 500px; background: #a855f7; top: -150px; left: -150px; }
+        .orb-2 { width: 600px; height: 600px; background: #3b82f6; bottom: -200px; right: -200px; }
+        .orb-3 { width: 400px; height: 400px; background: #22d3ee; top: 40%; left: 30%; opacity: 0.15; }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar { width: 5px; height: 5px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.2); }
+
+        .glass { background: rgba(13, 20, 37, 0.7); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.05); }
         
-        .glass { background: rgba(13, 20, 37, 0.6); backdrop-filter: blur(16px); border: 1px solid rgba(148, 163, 184, 0.1); }
-        
-        .sidebar-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(4px); z-index: 40; opacity: 0; pointer-events: none; transition: opacity 0.3s; }
-        .sidebar-overlay.active { opacity: 1; pointer-events: auto; }
-        
-        .sidebar { position: fixed; top: 0; left: 0; bottom: 0; width: 300px; background: #0a1020; border-right: 1px solid rgba(148, 163, 184, 0.1); z-index: 50; transform: translateX(-100%); transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1); display: flex; flex-direction: column; }
-        .sidebar.open { transform: translateX(0); }
-        @media (min-width: 1024px) {
-            .sidebar { transform: translateX(0); }
-            .main-content { margin-left: 300px; }
-            .sidebar-overlay { display: none !important; }
-            .mobile-menu-btn { display: none !important; }
+        /* Sidebar Anim */
+        .sidebar { transition: transform 0.3s ease; }
+        @media (max-width: 1024px) {
+            .sidebar { transform: translateX(-100%); }
+            .sidebar.open { transform: translateX(0); }
+            .sidebar-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); backdrop-filter: blur(4px); z-index: 40; opacity: 0; pointer-events: none; transition: 0.3s; }
+            .sidebar-overlay.active { opacity: 1; pointer-events: auto; }
         }
 
-        .loader { width: 24px; height: 24px; border: 3px solid rgba(59, 130, 246, 0.2); border-top: 3px solid #3b82f6; border-radius: 50%; animation: spin 1s linear infinite; }
+        /* Table / List Style */
+        .api-row { transition: all 0.2s; border-left: 3px solid transparent; cursor: pointer; }
+        .api-row:hover, .api-row.active { background: rgba(59, 130, 246, 0.1); border-left-color: #3b82f6; }
+        
+        /* Loader Spinner */
+        .loader { width: 20px; height: 20px; border: 2px solid rgba(59, 130, 246, 0.2); border-top: 2px solid #3b82f6; border-radius: 50%; animation: spin 1s linear infinite; }
         @keyframes spin { to { transform: rotate(360deg); } }
-        
-        .category-btn { transition: all 0.2s; border-left: 3px solid transparent; }
-        .category-btn:hover, .category-btn.active { background: rgba(59, 130, 246, 0.1); border-left-color: #3b82f6; color: #60a5fa; }
-        
+
+        /* Animations */
         .fade-in { animation: fadeIn 0.4s ease-out; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
-        .btn-gradient { background: linear-gradient(135deg, #a855f7, #3b82f6); transition: 0.3s; }
-        .btn-gradient:hover { opacity: 0.9; transform: translateY(-2px); box-shadow: 0 10px 20px -10px rgba(59, 130, 246, 0.8); }
         
-        ::-webkit-scrollbar { width: 6px; height: 6px; }
-        ::-webkit-scrollbar-track { background: #0a1020; }
-        ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 4px; }
-        ::-webkit-scrollbar-thumb:hover { background: #334155; }
+        .btn-gradient { background: linear-gradient(135deg, #3b82f6, #8b5cf6); transition: 0.3s; }
+        .btn-gradient:hover { opacity: 0.9; transform: translateY(-2px); box-shadow: 0 10px 20px -10px rgba(59, 130, 246, 0.8); }
     </style>
 </head>
-<body class="antialiased min-h-screen relative">
+<body class="antialiased min-h-screen flex overflow-hidden relative">
 
     <div class="bg-orbs">
         <div class="orb orb-1"></div>
         <div class="orb orb-2"></div>
+        <div class="orb orb-3"></div>
     </div>
 
-    <div id="loadingScreen" class="fixed inset-0 z-[9999] bg-[#060914] flex items-center justify-center transition-opacity duration-500">
-        <div class="text-center">
-            <div class="loader mx-auto mb-4 !w-10 !h-10"></div>
-            <p class="text-slate-400 text-sm font-display animate-pulse">Menyiapkan CHISA • API...</p>
-        </div>
+    <!-- Loading Screen -->
+    <div id="loadingScreen" class="fixed inset-0 z-[9999] bg-[#04070f] flex flex-col items-center justify-center transition-opacity duration-500">
+        <div class="loader mb-4 !w-12 !h-12 !border-4"></div>
+        <p class="text-slate-400 text-sm font-display animate-pulse tracking-widest uppercase">System Ready...</p>
     </div>
 
-    <div id="sidebarOverlay" class="sidebar-overlay"></div>
+    <!-- Sidebar Overlay Mobile -->
+    <div id="sidebarOverlay" class="sidebar-overlay lg:hidden"></div>
 
-    <aside id="sidebar" class="sidebar shadow-2xl">
-        <div class="h-16 flex items-center justify-between px-6 border-b border-slate-800 shrink-0">
-            <span class="text-xl font-bold gradient-text font-display tracking-widest">CHISA • API</span>
-            <button onclick="toggleSidebar()" class="lg:hidden text-slate-400 hover:text-white">
+    <!-- SIDEBAR: Kategori List -->
+    <aside id="sidebar" class="sidebar fixed lg:relative top-0 left-0 bottom-0 w-[280px] bg-[#0a1020] border-r border-slate-800 z-50 flex flex-col h-full shrink-0 shadow-2xl">
+        <div class="h-16 flex items-center justify-between px-5 border-b border-slate-800 shrink-0">
+            <a href="index.html" class="text-lg font-bold font-display tracking-wide text-white hover:text-blue-400 transition-colors">
+                <i class="fas fa-chevron-left text-xs mr-1"></i> CHISA API
+            </a>
+            <button onclick="toggleSidebar()" class="lg:hidden text-slate-400 hover:text-white p-2">
                 <i class="fas fa-times"></i>
             </button>
         </div>
 
-        <div class="flex-1 overflow-y-auto py-4 px-3 space-y-1" id="sidebarMenu">
-            <p class="px-3 text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-2 mt-2">API Categories</p>
-            <div id="categoryList">
+        <div class="p-4 border-b border-slate-800">
+            <div class="relative">
+                <i class="fas fa-search absolute left-3 top-2.5 text-slate-500 text-xs"></i>
+                <input type="text" id="searchInput" placeholder="Cari API..." class="w-full bg-[#04070f] border border-slate-700 text-xs rounded-lg pl-8 pr-3 py-2 text-white focus:outline-none focus:border-blue-500 transition-colors">
             </div>
         </div>
 
-        <div class="p-4 border-t border-slate-800 bg-[#04070f] shrink-0">
+        <div class="flex-1 overflow-y-auto p-3 space-y-1" id="categoryList">
+            <!-- Rendered by JS -->
+        </div>
+
+        <div class="p-4 border-t border-slate-800 bg-[#04070f]">
             <div class="flex items-center gap-3">
-                <img src="https://cdn.zass.in/lsXr7NCsX8.jpeg" class="w-8 h-8 rounded-full border border-slate-700">
+                <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-blue-500 to-purple-500 flex items-center justify-center text-white font-bold text-xs">C</div>
                 <div>
                     <p class="text-xs font-bold text-white">Administrator</p>
                     <p class="text-[10px] text-green-400"><i class="fas fa-circle text-[6px] mr-1"></i> Online</p>
@@ -105,158 +116,55 @@
         </div>
     </aside>
 
-    <main class="main-content flex-1 flex flex-col min-h-screen w-full relative transition-all duration-300">
+    <!-- MAIN CONTENT -->
+    <main class="flex-1 flex flex-col h-screen overflow-hidden w-full relative z-10">
         
-        <header class="glass sticky top-0 z-30 flex items-center justify-between px-4 sm:px-6 h-16 shadow-lg">
-            <div class="flex items-center gap-4">
-                <button onclick="toggleSidebar()" class="mobile-menu-btn text-slate-300 hover:text-white w-10 h-10 flex items-center justify-center bg-slate-800 rounded-lg">
+        <!-- Header -->
+        <header class="glass sticky top-0 z-30 flex items-center justify-between px-4 sm:px-6 h-16 shrink-0">
+            <div class="flex items-center gap-3">
+                <button onclick="toggleSidebar()" class="lg:hidden text-slate-300 hover:text-white w-9 h-9 flex items-center justify-center bg-slate-800 rounded-lg">
                     <i class="fas fa-bars"></i>
                 </button>
-                <h1 class="text-sm font-bold text-slate-200 hidden sm:block font-display">Documentation Panel</h1>
+                <div class="hidden sm:block">
+                    <h1 class="text-sm font-bold text-white font-display">API Explorer</h1>
+                </div>
             </div>
-            <div class="flex items-center gap-3">
-                <a href="https://wa.me/6285715989482" target="_blank" class="text-green-400 hover:text-green-300 bg-green-500/10 px-3 py-1.5 rounded-full text-xs font-semibold border border-green-500/20 transition-all">
-                    <i class="fab fa-whatsapp mr-1"></i> Contact
-                </a>
+            
+            <!-- Device Info (Battery, Network, Clock) -->
+            <div class="flex items-center gap-2 sm:gap-4 text-xs font-mono">
+                <div class="flex items-center gap-1.5 bg-slate-800/50 px-2.5 py-1.5 rounded-lg border border-slate-700/50" title="Baterai">
+                    <i class="fas fa-battery-full text-green-400" id="batIcon"></i>
+                    <span id="batText" class="text-slate-300 hidden sm:inline">--%</span>
+                </div>
+                <div class="flex items-center gap-1.5 bg-slate-800/50 px-2.5 py-1.5 rounded-lg border border-slate-700/50" title="Jaringan">
+                    <i class="fas fa-wifi text-blue-400"></i>
+                    <span id="netText" class="text-slate-300 hidden sm:inline">--</span>
+                </div>
+                <div class="flex items-center gap-1.5 bg-slate-800/50 px-2.5 py-1.5 rounded-lg border border-slate-700/50" title="Waktu">
+                    <i class="fas fa-clock text-purple-400"></i>
+                    <span id="clockText" class="text-slate-300">--:--</span>
+                </div>
             </div>
         </header>
 
-        <div class="p-4 sm:p-6 lg:p-8 flex-1">
-            <div class="max-w-5xl mx-auto w-full">
-                
-                <div class="mb-6 fade-in">
-                    <h2 class="text-2xl sm:text-3xl font-extrabold text-white mb-2 font-display">Explore API</h2>
-                    <p class="text-slate-400 text-sm">Pilih kategori di menu sebelah kiri, lalu klik endpoint untuk mencoba.</p>
-                </div>
-
-                <div class="relative w-full mb-8 fade-in">
-                    <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                        <i class="fas fa-search text-slate-500"></i>
-                    </div>
-                    <input type="text" id="searchInput" placeholder="Cari nama API atau endpoint..." class="w-full pl-11 pr-4 py-3 bg-[#0a1020]/80 backdrop-blur-md border border-slate-700 text-sm rounded-xl focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 text-slate-200 transition-all shadow-inner">
-                </div>
-
-                <div class="big-thumb relative w-full aspect-video rounded-3xl overflow-hidden mb-6 shadow-2xl shadow-blue-900/20 border border-slate-800 fade-in">
-                    <img src="https://media.giphy.com/media/qgQUggAC3Pfv687qPC/giphy.gif" alt="Coding" class="w-full h-full object-cover opacity-80">
-                    <div class="absolute inset-0 bg-gradient-to-t from-[#060914] via-transparent to-transparent"></div>
-                    <div class="absolute bottom-4 left-6">
-                        <span class="bg-black/60 backdrop-blur-md border border-slate-600 text-white text-xs font-bold px-3 py-1.5 rounded-full"><i class="fas fa-code text-blue-400 mr-2"></i>CHISA Developer</span>
-                    </div>
-                </div>
-
-                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-8 fade-in">
-                    <div class="glass p-4 rounded-2xl flex items-center justify-between">
-                        <div>
-                            <p class="text-xs text-slate-400 font-semibold mb-1">Baterai</p>
-                            <p id="batteryStatus" class="text-lg font-bold text-white">--%</p>
-                        </div>
-                        <div class="w-10 h-10 rounded-full bg-green-500/10 flex items-center justify-center text-green-400">
-                            <i class="fas fa-battery-full text-lg" id="batteryIcon"></i>
-                        </div>
-                    </div>
-                    <div class="glass p-4 rounded-2xl flex items-center justify-between">
-                        <div>
-                            <p class="text-xs text-slate-400 font-semibold mb-1">Jaringan</p>
-                            <p id="networkStatus" class="text-lg font-bold text-white">--</p>
-                        </div>
-                        <div class="w-10 h-10 rounded-full bg-blue-500/10 flex items-center justify-center text-blue-400">
-                            <i class="fas fa-wifi text-lg"></i>
-                        </div>
-                    </div>
-                    <div class="glass p-4 rounded-2xl flex items-center justify-between">
-                        <div>
-                            <p class="text-xs text-slate-400 font-semibold mb-1">Waktu Server</p>
-                            <p id="clockStatus" class="text-lg font-bold text-white font-mono">--:--:--</p>
-                        </div>
-                        <div class="w-10 h-10 rounded-full bg-purple-500/10 flex items-center justify-center text-purple-400">
-                            <i class="fas fa-clock text-lg"></i>
-                        </div>
-                    </div>
-                </div>
-
+        <!-- Scrollable Content Area -->
+        <div class="flex-1 overflow-y-auto p-4 sm:p-6 scroll-smooth relative">
+            <div class="max-w-4xl mx-auto w-full pb-10">
                 <div id="api-content-area" class="fade-in">
-                    <div class="text-center py-16 glass rounded-3xl border border-dashed border-slate-700">
-                        <i class="fas fa-hand-pointer text-3xl text-slate-600 mb-4 animate-bounce"></i>
-                        <h3 class="text-slate-300 font-bold mb-1">Belum Ada API Dipilih</h3>
-                        <p class="text-slate-500 text-sm">Silakan pilih kategori di menu kiri untuk memulai.</p>
+                    <!-- Empty State -->
+                    <div class="text-center py-20 glass rounded-3xl border border-dashed border-slate-700 mt-4 h-[60vh] flex flex-col items-center justify-center">
+                        <div class="w-20 h-20 bg-blue-500/10 rounded-full flex items-center justify-center mb-5">
+                            <i class="fas fa-hand-pointer text-3xl text-blue-400 animate-bounce"></i>
+                        </div>
+                        <h3 class="text-white font-bold text-lg mb-2 font-display">Pilih Endpoint</h3>
+                        <p class="text-slate-400 text-sm max-w-xs mx-auto">Silakan pilih kategori atau endpoint di menu sebelah kiri untuk mulai mencoba API.</p>
                     </div>
                 </div>
-
             </div>
         </div>
-
-        <footer class="mt-auto py-5 text-center border-t border-slate-800/50">
-            <p class="text-xs text-slate-500 font-display">© 2025 <span class="text-blue-400 font-bold">CHISA • API</span></p>
-        </footer>
     </main>
 
-    <div class="hidden">
-        <span id="totalApis">0</span>
-        <span id="totalCategories">0</span>
-        <span id="batteryLevel">0</span>
-        <span id="batteryDetail">0</span>
-        <span id="networkType">0</span>
-        <span id="quotaInfo">0</span>
-        <span id="titleApi"></span>
-        <span id="descApi"></span>
-        <span id="footer"></span>
-    </div>
-
-    <script>
-        function toggleSidebar() {
-            const sidebar = document.getElementById('sidebar');
-            const overlay = document.getElementById('sidebarOverlay');
-            sidebar.classList.toggle('open');
-            overlay.classList.toggle('active');
-        }
-
-        function updateDeviceInfo() {
-            if ('getBattery' in navigator) {
-                navigator.getBattery().then(function (battery) {
-                    const level = Math.round(battery.level * 100);
-                    const status = level + '%' + (battery.charging ? ' ⚡' : '');
-                    
-                    const batEl = document.getElementById('batteryStatus');
-                    if(batEl) batEl.textContent = status;
-                    
-                    const icon = document.getElementById('batteryIcon');
-                    if(icon) {
-                        icon.className = 'fas ' + (
-                            level > 80 ? 'fa-battery-full' :
-                            level > 60 ? 'fa-battery-three-quarters' :
-                            level > 40 ? 'fa-battery-half' :
-                            level > 20 ? 'fa-battery-quarter' : 'fa-battery-empty'
-                        ) + ' text-lg';
-                    }
-                });
-            }
-
-            if (navigator.connection) {
-                const type = navigator.connection.effectiveType || 'Unknown';
-                const dl = navigator.connection.downlink ? navigator.connection.downlink + ' Mbps' : '';
-                const netEl = document.getElementById('networkStatus');
-                if(netEl) netEl.textContent = type.toUpperCase() + (dl ? ' • ' + dl : '');
-            } else {
-                document.getElementById('networkStatus').textContent = 'Terhubung';
-            }
-        }
-
-        function updateClock() {
-            const now = new Date();
-            const timeString = now.toLocaleTimeString('id-ID', { hour12: false });
-            const clockEl = document.getElementById('clockStatus');
-            if(clockEl) clockEl.textContent = timeString;
-        }
-
-        document.addEventListener('DOMContentLoaded', () => {
-            updateDeviceInfo();
-            setInterval(updateDeviceInfo, 30000);
-            updateClock();
-            setInterval(updateClock, 1000);
-        });
-    </script>
-
+    <!-- Script Data & Logic -->
     <script src="script.js"></script>
-
 </body>
 </html>
